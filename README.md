@@ -26,9 +26,6 @@ Contents
 --------
 
 I'm using [vundle](https://github.com/gmarik/vundle) to manage the bundles. The bundles are all
-declared in the [vimrc]. Look for the `Bundle "repeat.vim"` lines.
+declared in the [vimrc](https://github.com/nkpart/vimfiles/blob/master/vimrc#L85).
 
 Aside from the bundles and the custom vimrc, I've applied a haskell vimball as well.
-
-[vimrc]:https://github.com/nkpart/vimfiles/blob/master/vimrc
-
