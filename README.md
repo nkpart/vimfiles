@@ -7,7 +7,9 @@ Using it
 --------
 
     $ git clone http://github.com/nkpart/vimfiles.git .vim
-    $ cd .vim && ln -s vimrc ~/.vimrc
+    $ cd .vim 
+    $ ln -s vimrc ~/.vimrc
+    $ git submodule update --init
 
 Then fire up vim and run `:BundleInstall`.
 
@@ -20,9 +22,13 @@ After that, command-t needs some help:
 
 I use it for with vanilla vim in a terminal, but everything should work in the guis as well.
 
-
 Contents
 --------
-Aside from the bundles and the custom vimrc, I've applied a haskell vimball.
 
+I'm using [vundle](https://github.com/gmarik/vundle) to manage the bundles. The bundles are all
+declared in the [vimrc]. Look for the `Bundle "repeat.vim"` lines.
+
+Aside from the bundles and the custom vimrc, I've applied a haskell vimball as well.
+
+[vimrc]:https://github.com/nkpart/vimfiles/blob/master/vimrc
 
