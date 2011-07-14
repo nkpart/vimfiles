@@ -94,6 +94,17 @@ Bundle "git://github.com/tpope/vim-rails.git"
 runtime macros/matchit.vim
 Bundle "git://github.com/kana/vim-textobj-user.git"
 Bundle "git://github.com/nelstrom/vim-textobj-rubyblock.git"
+Bundle "Lokaltog/vim-easymotion"
+
+Bundle "https://github.com/ewiplayer/vim-scala.git"
+au BufRead,BufNewFile *.scala set filetype=scala
+au! Syntax scala source ~/.vim/bundle/vim-scala/syntax/scala.vim
+
+Bundle "tlib"
+Bundle "https://github.com/MarcWeber/vim-addon-manager.git"
+Bundle "https://github.com/MarcWeber/vim-addon-mw-utils.git"
+Bundle "https://github.com/MarcWeber/vim-addon-actions.git"
+Bundle "https://github.com/MarcWeber/vim-addon-sbt.git"
 
 Bundle "jQuery"
 Bundle "Markdown"
