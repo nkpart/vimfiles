@@ -1,5 +1,5 @@
 " Used by command-t to filter its list. TODO make ack use the same?
-set wildignore+=*.o,*.hi,*.obj,*.class,dist/**,build/**,*.png,*~,static/tmp/*,tmp/*,**/*.build/**,cabal-dev
+set wildignore+=*.o,*.hi,*.obj,*.class,dist/**,build/**,*.png,*~,static/tmp/*,tmp/*,**/*.build/**,cabal-dev,*.gz,*.p12
 set synmaxcol=240
 
 " Making insert/normal caret look different in iTerm
@@ -117,13 +117,19 @@ Bundle "gitv"
 Bundle "haskell.vim"
 Bundle "L9"
 
-" set background=dark
-" colorscheme solarized
-colorscheme tir_black
+Bundle "bufexplorer.zip"
+
+if $PRESENTATION_MODE
+  colorscheme github
+  set background=light
+else
+  set background=dark
+  colorscheme tir_black
+end
 
 let g:Gitv_OpenHorizontal=1
 
-" au Bufenter *.hs compiler ghc
+au Bufenter *.hs compiler ghc
 let g:haddock_browser = "open"
 let g:haddock_browser_callformat = "%s %s"
 
@@ -149,7 +155,9 @@ vnoremap / /\v
 nnoremap <leader><leader> <C-^>
 " Sets a mark then start an ack search
 nnoremap <leader>A mA:Ack<space>
-nnoremap <leader>a mA:Ack<space><cword>
+nnoremap <leader>aa mA:Ack<space>
+nnoremap <leader>aw mA:Ack<space><cword><cr>
+nnoremap <leader>ad mA:Ack<space>"def <cword>"<cr>
 
 " Command Ts
 nnoremap <leader>gf :CommandTFlush<cr>:CommandT<cr>
@@ -170,6 +178,10 @@ nnoremap <leader>rr <C-w>n:read !rake routes<cr>:call MapEscClose()<cr>
 nnoremap <leader>gS <C-w>n:e db/schema.rb<cr>:call MapEscClose()<cr>
 
 nnoremap <leader>o <C-w>n:call MapEscClose()<cr>:CommandTFlush<cr>:CommandT<cr>
+
+if filereadable("build.sbt")
+  nnoremap <leader>gs :CommandTFlush<cr>:CommandT src/main/scala<cr>
+endif
 
 func! MapEscClose()
   exe 'map <buffer> <C-c> :bd!<cr>'
