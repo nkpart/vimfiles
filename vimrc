@@ -5,7 +5,7 @@ set synmaxcol=240
 " Making insert/normal caret look different in iTerm
 let &t_SI = "\<Esc>]50;CursorShape=1\x7"
 let &t_EI = "\<Esc>]50;CursorShape=0\x7"
-
+" 
 " Mouse support TURN ON
 set mouse=a
 
@@ -78,46 +78,30 @@ set guifont=Anonymous\ Pro:h14
 
 let mapleader = ","
 
+runtime macros/matchit.vim
 " Vundles " {{{ 
 set rtp+=~/.vim/vundle.git
 call vundle#rc()
 
 " The Bundles
 
-" Bundle Config
 " Bundle "git://github.com/altercation/vim-colors-solarized.git" 
 Bundle "git://git.wincent.com/command-t.git"
 Bundle "git://github.com/mileszs/ack.vim.git" 
 Bundle "git://github.com/vim-ruby/vim-ruby.git" 
 Bundle "git://github.com/tpope/vim-rails.git"
+Bundle "git://github.com/tpope/vim-fugitive.git"
 
-runtime macros/matchit.vim
-Bundle "git://github.com/kana/vim-textobj-user.git"
-Bundle "git://github.com/nelstrom/vim-textobj-rubyblock.git"
-Bundle "Lokaltog/vim-easymotion"
-
-Bundle "https://github.com/ewiplayer/vim-scala.git"
+Bundle "https://github.com/derekwyatt/vim-scala.git"
 au BufRead,BufNewFile *.scala set filetype=scala
+
 au! Syntax scala source ~/.vim/bundle/vim-scala/syntax/scala.vim
 
-Bundle "tlib"
-Bundle "https://github.com/MarcWeber/vim-addon-manager.git"
-Bundle "https://github.com/MarcWeber/vim-addon-mw-utils.git"
-Bundle "https://github.com/MarcWeber/vim-addon-actions.git"
-Bundle "https://github.com/MarcWeber/vim-addon-sbt.git"
-
-Bundle "jQuery"
 Bundle "Markdown"
 Bundle "repeat.vim"
 Bundle "surround.vim"
-Bundle "fugitive.vim"
-Bundle "Conque-Shell"
 Bundle "tComment"
-Bundle "gitv"
-Bundle "haskell.vim"
-Bundle "L9"
-
-Bundle "bufexplorer.zip"
+Bundle "https://github.com/lukerandall/haskellmode-vim.git"
 
 if $PRESENTATION_MODE
   colorscheme github
@@ -127,11 +111,18 @@ else
   colorscheme tir_black
 end
 
-let g:Gitv_OpenHorizontal=1
-
+" Haskell config
 au Bufenter *.hs compiler ghc
 let g:haddock_browser = "open"
 let g:haddock_browser_callformat = "%s %s"
+
+" haskell-mode.vim does bad things to shellpipe that break ack, this brings it
+" back.
+let g:original_shellpipe=&shellpipe
+au QuickFixCmdPre grep call FixUpTheShellPipe()
+func! FixUpTheShellPipe()
+  setlocal shellpipe=2>&1\|tee
+endfunc
 
 " " }}}
 
@@ -154,14 +145,13 @@ vnoremap <tab> %
 vnoremap / /\v
 nnoremap <leader><leader> <C-^>
 " Sets a mark then start an ack search
-nnoremap <leader>A mA:Ack<space>
 nnoremap <leader>aa mA:Ack<space>
-nnoremap <leader>aw mA:Ack<space><cword><cr>
-nnoremap <leader>ad mA:Ack<space>"def <cword>"<cr>
+nnoremap <leader>ad mA:Ack<space>"def (self\.)?<cword>"<cr>
 
 " Command Ts
 nnoremap <leader>gf :CommandTFlush<cr>:CommandT<cr>
   " Rails
+nnoremap <leader>gg :CommandTFlush<cr>:CommandT features<cr>
 nnoremap <leader>gs :CommandTFlush<cr>:CommandT spec<cr>
 nnoremap <leader>ga :CommandTFlush<cr>:CommandT app<cr>
 nnoremap <leader>gm :CommandTFlush<cr>:CommandT app/models<cr>
@@ -173,15 +163,11 @@ nnoremap <leader>gc :CommandTFlush<cr>:CommandT app/controllers<cr>
 "  - routes
 nnoremap <leader>gr <C-w>n:e config/routes.rb<cr>:call MapEscClose()<cr>
 "  - rake routes
-nnoremap <leader>rr <C-w>n:read !rake routes<cr>:call MapEscClose()<cr>
+nnoremap <leader>rr <C-w>n:read !bin/rake routes<cr>:call MapEscClose()<cr>
 "  - schema
 nnoremap <leader>gS <C-w>n:e db/schema.rb<cr>:call MapEscClose()<cr>
 
 nnoremap <leader>o <C-w>n:call MapEscClose()<cr>:CommandTFlush<cr>:CommandT<cr>
-
-if filereadable("build.sbt")
-  nnoremap <leader>gs :CommandTFlush<cr>:CommandT src/main/scala<cr>
-endif
 
 func! MapEscClose()
   exe 'map <buffer> <C-c> :bd!<cr>'
@@ -212,9 +198,21 @@ nnoremap <leader>r :A<cr>
 nnoremap <leader>s <C-w>v<C-w>w:A<cr> " Split with alternate
 nnoremap <leader>ms :call MapSpecFile()<cr>
 
+nnoremap <leader>c :wall<cr>:make<cr>
+
 func! MapSpecFile()
   exe 'map ,t :wa\|!any_test ' . expand("%") . '<cr>'
 endfunc
+
+if filereadable("build.sbt")
+  nnoremap <leader>gc :CommandTFlush<cr>:CommandT src/main/scala<cr>
+  nnoremap <leader>gs :CommandTFlush<cr>:CommandT src/test/scala<cr>
+
+  func! MapSpecFile()
+    exe 'map ,t :!sbt "test-only *' . expand("<cword>") . '"<cr>'
+  endfunc
+endif
+
 
 " Hax intentions
 nnoremap <leader>mf yiwo@<esc>pa<space>=<space><esc>p
