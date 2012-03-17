@@ -7,7 +7,7 @@ set wildignore+=*/rss_images/*.jpg,*/rss_images/*.gif
 set wildignore+=vendor/cache/*
 
 " Prevents vim getting really sluggish if there are long lines of data
-set synmaxcol=240
+set synmaxcol=400
 
 set t_Co=256
 
@@ -89,9 +89,10 @@ set rtp+=~/.vim/vundle.git
 call vundle#rc()
 
 " The Bundles
+Bundle "https://github.com/scrooloose/syntastic.git"
 Bundle "https://github.com/Lokaltog/vim-powerline.git"
 Bundle "jellybeans.vim"
-Bundle "git://git.wincent.com/command-t.git"
+Bundle "git://github.com/nkpart/command-t.git"
 Bundle "git://github.com/mileszs/ack.vim.git" 
 Bundle "git://github.com/vim-ruby/vim-ruby.git" 
 Bundle "git://github.com/tpope/vim-rails.git"
@@ -103,6 +104,8 @@ Bundle "surround.vim"
 Bundle "tComment"
 Bundle "https://github.com/lukerandall/haskellmode-vim.git"
 Bundle "https://github.com/pbrisbin/html-template-syntax.git"
+Bundle "https://github.com/Shougo/vimproc.git"
+Bundle "https://github.com/eagletmt/ghcmod-vim.git"
   " Useful text objects
 Bundle "https://github.com/kana/vim-textobj-user.git"
 Bundle "https://github.com/nelstrom/vim-textobj-rubyblock.git" 
@@ -143,11 +146,46 @@ nnoremap <leader><leader> <C-^>
 nnoremap <leader>aa mA:Ack<space>
 nnoremap <leader>ad mA:Ack<space>"def (self\.)?<cword>"<cr>
 
+" Command T Finders Rule
+
+ruby $LOAD_PATH << File.expand_path("~/.vim/ruby")
+ruby require "command-t-finders"
+function s:CommandTShowHoogleFinder()
+ruby << RUBY
+finder = Finder.base.
+  find_command { |str| 
+    modules = VIM::evaluate("exists(\"g:hoogle_modules\") ? g:hoogle_modules : \"\" ")
+    %`hoogle #{modules} -n 10 "#{str}"` 
+  }.
+  copy_selection
+$command_t.show_finder(finder)
+RUBY
+endfunction
+
+function s:CommandTShowGemfileFinder()
+ruby << RUBY
+pwd = ::VIM::evaluate 'getcwd()'
+gems = IO.read(File.join(pwd, "Gemfile.lock"))[/specs:(.*)PLATFORMS/m,1].split("\n").grep(/\s\s\s\s.*\(\d\..*\)/).map { |x| x.strip }
+finder = Finder.base.
+  grep_list(gems).
+  vim_handler { |selection|
+    gem_name = selection[/\s*(.*)\s*\(.*/, 1]
+    dir = `bundle show #{gem_name}`.chomp
+    <<-VIM
+    :Sexplore #{dir}
+    :lcd #{dir}
+    VIM
+  }
+$command_t.show_finder(finder)
+RUBY
+endfunction
+
 " Command Ts
 nnoremap <leader>gf :CommandTFlush<cr>:CommandT<cr>
 nnoremap <leader>gb :CommandTFlush<cr>:CommandTBuffer<cr>
+nnoremap <leader>gh :CommandTFlush<cr>:call <SID>CommandTShowHoogleFinder()<cr>
+nnoremap <leader>gg :CommandTFlush<cr>:call <SID>CommandTShowGemfileFinder()<cr>
   " Rails
-nnoremap <leader>gg :CommandTFlush<cr>:CommandT features<cr>
 nnoremap <leader>gs :CommandTFlush<cr>:CommandT spec<cr>
 nnoremap <leader>ga :CommandTFlush<cr>:CommandT app<cr>
 nnoremap <leader>gm :CommandTFlush<cr>:CommandT app/models<cr>
@@ -159,6 +197,9 @@ nnoremap <leader>B :silent !osascript ~/chrome_refresh.scpt<cr><C-l>
 
 nnoremap <C-j> :cn<cr>
 nnoremap <C-k> :cp<cr> 
+
+nnoremap <leader>t :GhcModType<cr>
+nnoremap <leader>T :silent :GhcModTypeClear<cr>
 
 nnoremap <CR> :noh<cr>
 inoremap jj <esc>:ccl<cr>:noh<cr>
