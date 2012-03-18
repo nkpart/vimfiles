@@ -7,8 +7,9 @@ class Finder < Struct.new(:matcher, :opener)
     matcher[str]
   end
 
-  def open_selection(selection, options)
-    opener[selection] 
+  def open_selection(command, selection, options)
+    # Un-escape spaces introduced by sanitize
+    opener[selection.gsub("\\ ", " ").strip] 
   end
 
   def find_command(&p)
