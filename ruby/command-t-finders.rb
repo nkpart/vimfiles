@@ -22,6 +22,11 @@ class Finder < Struct.new(:matcher, :opener)
     self
   end
 
+  def with_matcher(&p)
+    self.matcher = p
+    self
+  end
+
   def grep_list(xs)
     self.matcher = proc { |str|
       xs.grep(/#{str}/)
@@ -39,6 +44,11 @@ class Finder < Struct.new(:matcher, :opener)
 
   def copy_selection
     vim_handler { |selection| ":let @* = \"#{selection}\"" }
+    self
+  end
+  
+  def open_selection_
+    vim_handler { |selection| "silent :e #{selection}" }
     self
   end
 

@@ -150,7 +150,7 @@ nnoremap <leader>ad mA:Ack<space>"def (self\.)?<cword>"<cr>
 
 ruby $LOAD_PATH << File.expand_path("~/.vim/ruby")
 ruby require "command-t-finders"
-function s:CommandTShowHoogleFinder()
+function! s:CommandTShowHoogleFinder()
 ruby << RUBY
 finder = Finder.base.
   find_command { |str| 
@@ -162,7 +162,24 @@ $command_t.show_finder(finder)
 RUBY
 endfunction
 
-function s:CommandTShowGemfileFinder()
+function! s:CommandTShowMyTagFinder()
+ruby << RUBY
+finder = Finder.base.
+  with_matcher { |str| 
+    if !str || str.empty? || str.length < 3
+      ""
+    else
+      VIM::evaluate("taglist(#{str.inspect})").map { |t| t['name'] }
+    end
+  }.
+  vim_handler { |selection|
+    "silent! tag #{selection} | :normal zz"
+  }
+$command_t.show_finder(finder)
+RUBY
+endfunction
+
+function! s:CommandTShowGemfileFinder()
 ruby << RUBY
 pwd = ::VIM::evaluate 'getcwd()'
 gems = IO.read(File.join(pwd, "Gemfile.lock"))[/specs:(.*)PLATFORMS/m,1].split("\n").grep(/\s\s\s\s.*\(\d\..*\)/).map { |x| x.strip }
@@ -185,6 +202,7 @@ nnoremap <leader>gf :CommandTFlush<cr>:CommandT<cr>
 nnoremap <leader>gb :CommandTFlush<cr>:CommandTBuffer<cr>
 nnoremap <leader>gh :CommandTFlush<cr>:call <SID>CommandTShowHoogleFinder()<cr>
 nnoremap <leader>gg :CommandTFlush<cr>:call <SID>CommandTShowGemfileFinder()<cr>
+nnoremap <leader>gt :CommandTFlush<cr>:call <SID>CommandTShowMyTagFinder()<cr>
   " Rails
 nnoremap <leader>gs :CommandTFlush<cr>:CommandT spec<cr>
 nnoremap <leader>ga :CommandTFlush<cr>:CommandT app<cr>
