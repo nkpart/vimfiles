@@ -5,6 +5,9 @@ set wildignore+=*/.bundle/*
 set wildignore+=*/content_bundles/*/original/*
 set wildignore+=*/rss_images/*.jpg,*/rss_images/*.gif
 set wildignore+=vendor/cache/*
+set wildignore+=_darcs/*
+
+set tags+=gems.tags
 
 " Prevents vim getting really sluggish if there are long lines of data
 set synmaxcol=400
@@ -169,11 +172,32 @@ finder = Finder.base.
     if !str || str.empty? || str.length < 3
       ""
     else
-      VIM::evaluate("taglist(#{str.inspect})").map { |t| t['name'] }
+      a, b = *str.split(' ')
+      if b
+        tag = b
+        file = a
+      else
+        tag = a
+        file = nil
+      end
+      if !tag || tag.empty? || tag.length < 3
+        ""
+      else
+        VIM::evaluate("taglist(#{tag.inspect})").select { |x| !file || x['filename'].include?(file) }.map { |t| 
+          t['name'] + " - " + t['filename'].gsub(Dir.pwd + '/', '')#.gsub(/.*\/gems\//, '') 
+        }
+      end
     end
   }.
   vim_handler { |selection|
-    "silent! tag #{selection} | :normal zz"
+    md = selection.match(/(.*) - (.*)/)
+    tag = md[1]
+    file = md[2] 
+    <<-EOC
+silent! e #{file}
+silent! tag #{tag}
+normal zz
+    EOC
   }
 $command_t.show_finder(finder)
 RUBY
