@@ -11,7 +11,6 @@ set tags+=gems.tags
 
 " Prevents vim getting really sluggish if there are long lines of data
 set synmaxcol=400
-
 set t_Co=256
 
 " Making insert/normal caret look different in iTerm
@@ -19,24 +18,19 @@ let &t_SI = "\<Esc>]50;CursorShape=1\x7"
 let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 
 set mouse=a
-
 set nocompatible
 set history=50		" keep 50 lines of command line history
 set autowrite
 set autoread
 set clipboard+=unnamed " yank goes to clipboard
-" Modeline
 set modelines=5
 set modeline
-" Backup
 set noswapfile
 set nowritebackup
 set nobackup
 set backupdir=/var/tmp
 set directory=/var/tmp
-" Buffers
 set hidden
-" Search/Match
 set ignorecase
 set smartcase
 set gdefault
@@ -51,7 +45,6 @@ set fo-=t " no autowrap
 set nowrap
 set textwidth=0
 set wildmode=list:longest
-
 set backspace=indent,eol,start
 
 " space/tab settings
@@ -61,7 +54,6 @@ set softtabstop=2
 set expandtab
 set linespace=4
 set smarttab
-
 set cindent
 set autoindent
 set smartindent
@@ -84,7 +76,7 @@ set number
 set guifont=Anonymous\ Pro:h14
 
 let mapleader = ","
-nnoremap <space> :
+" nnoremap <space> :
 
 runtime macros/matchit.vim
 
@@ -126,6 +118,13 @@ end
 
 " Haskell config
 au Bufenter *.hs compiler ghc
+function! SetToCabalBuild()
+  if glob("*.cabal") != ''
+    set makeprg=cabal\ build
+  endif
+endfunction
+autocmd BufEnter *.hs,*.lhs :call SetToCabalBuild()
+
 let g:haddock_browser = "open"
 let g:haddock_browser_callformat = "%s %s"
 
@@ -148,6 +147,7 @@ nnoremap <leader><leader> <C-^>
 " Sets a mark then start an ack search
 nnoremap <leader>aa mA:Ack<space>
 nnoremap <leader>ad mA:Ack<space>"def (self\.)?<cword>"<cr>
+nnoremap <leader>ac mA:Ack<space>"<<<<"<cr><C-w>w
 
 " Command T Finders Rule
 
@@ -155,32 +155,26 @@ ruby $LOAD_PATH << File.expand_path("~/.vim/ruby")
 ruby require "command-t-finders"
 function! s:CommandTShowHoogleFinder()
 ruby << RUBY
-finder = Finder.base.
-  find_command { |str| 
+Finder.base.
+  run_command { |str| 
     modules = VIM::evaluate("exists(\"g:hoogle_modules\") ? g:hoogle_modules : \"\" ")
     %`hoogle #{modules} -n 10 "#{str}"` 
   }.
-  copy_selection
-$command_t.show_finder(finder)
+  copy_selection.
+  show!
 RUBY
 endfunction
 
 function! s:CommandTShowMyTagFinder()
 ruby << RUBY
-finder = Finder.base.
-  with_matcher { |str| 
-    if !str || str.empty? || str.length < 3
+Finder.present do
+  generate_with { |str| 
+    if !str || str.length < 3
       ""
     else
       a, b = *str.split(' ')
-      if b
-        tag = b
-        file = a
-      else
-        tag = a
-        file = nil
-      end
-      if !tag || tag.empty? || tag.length < 3
+      tag, file = *(b ? [b, a] : [a, nil])
+      if !tag || tag.length < 3
         ""
       else
         VIM::evaluate("taglist(#{tag.inspect})").select { |x| !file || x['filename'].include?(file) }.map { |t| 
@@ -188,82 +182,73 @@ finder = Finder.base.
         }
       end
     end
-  }.
+  }
   vim_handler { |selection|
     md = selection.match(/(.*) - (.*)/)
     tag = md[1]
     file = md[2] 
-    <<-EOC
-silent! e #{file}
-silent! tag #{tag}
-normal zz
-    EOC
+    "silent! e #{file} | silent! tag #{tag} | normal zz"
   }
-$command_t.show_finder(finder)
+end
 RUBY
 endfunction
 
 function! s:CommandTShowGemfileFinder()
 ruby << RUBY
-pwd = ::VIM::evaluate 'getcwd()'
-gems = IO.read(File.join(pwd, "Gemfile.lock"))[/specs:(.*)PLATFORMS/m,1].split("\n").grep(/\s\s\s\s.*\(\d\..*\)/).map { |x| x.strip }
-finder = Finder.base.
-  grep_list(gems).
-  vim_handler { |selection|
-    gem_name = selection[/\s*(.*)\s*\(.*/, 1]
-    dir = `bundle show #{gem_name}`.chomp
-    <<-VIM
-    :Sexplore #{dir}
-    :lcd #{dir}
-    VIM
-  }
-$command_t.show_finder(finder)
+  pwd = ::VIM::evaluate 'getcwd()'
+  gems = IO.read(File.join(pwd, "Gemfile.lock"))[/specs:(.*)PLATFORMS/m,1].split("\n").grep(/\s\s\s\s.*\(\d\..*\)/).map { |x| x.strip }
+  Finder.present do
+    match_list(gems)
+    vim_handler { |selection|
+      gem_name = selection[/\s*(.*)\s*\(.*/, 1]
+      dir = `bundle show #{gem_name}`.chomp
+      "Sexplore #{dir} | lcd #{dir}"
+    }
+  end
+RUBY
+endfunction
+
+function! s:CommandTShowMyFileFinder()
+ruby << RUBY
+  wildignore = ::VIM::evaluate('&wildignore').split(",").map { |v| "-not -name \"#{v}\"" }.join(" ")
+  files = `find * #{wildignore} -type f`.split("\n")
+  Finder.present do
+    match_list(files, 10)
+    open_selection_
+  end
 RUBY
 endfunction
 
 " Command Ts
-nnoremap <leader>gf :CommandTFlush<cr>:CommandT<cr>
+nnoremap <leader>gF :CommandTFlush<cr>:CommandT<cr>
+nnoremap <leader>gf :call <SID>CommandTShowMyFileFinder()<cr>
 nnoremap <leader>gb :CommandTFlush<cr>:CommandTBuffer<cr>
-nnoremap <leader>gh :CommandTFlush<cr>:call <SID>CommandTShowHoogleFinder()<cr>
-nnoremap <leader>gg :CommandTFlush<cr>:call <SID>CommandTShowGemfileFinder()<cr>
-nnoremap <leader>gt :CommandTFlush<cr>:call <SID>CommandTShowMyTagFinder()<cr>
+nnoremap <leader>gh :call <SID>CommandTShowHoogleFinder()<cr>
+nnoremap <leader>gg :call <SID>CommandTShowGemfileFinder()<cr>
+nnoremap <leader>gt :call <SID>CommandTShowMyTagFinder()<cr>
   " Rails
 nnoremap <leader>gs :CommandTFlush<cr>:CommandT spec<cr>
-nnoremap <leader>ga :CommandTFlush<cr>:CommandT app<cr>
 nnoremap <leader>gm :CommandTFlush<cr>:CommandT app/models<cr>
 nnoremap <leader>gl :CommandTFlush<cr>:CommandT lib<cr>
 nnoremap <leader>gv :CommandTFlush<cr>:CommandT app/views<cr>
 nnoremap <leader>gc :CommandTFlush<cr>:CommandT app/controllers<cr>
-
-nnoremap <leader>B :silent !osascript ~/chrome_refresh.scpt<cr><C-l>
 
 nnoremap <C-j> :cn<cr>
 nnoremap <C-k> :cp<cr> 
 
 nnoremap <leader>t :GhcModType<cr>
 nnoremap <leader>T :silent :GhcModTypeClear<cr>
+nnoremap <leader>c :wa<cr>:GhcModCheck<cr>
 
 nnoremap <CR> :noh<cr>
 inoremap jj <esc>:ccl<cr>:noh<cr>
 
-cnoremap %% <C-R>=expand('%:h').'/'<cr>
-
-nnoremap <leader>r :A<cr> 
 nnoremap <leader>s <C-w>v<C-w>w:A<cr> " Split with alternate
-nnoremap <leader>ms :call MapSpecFile()<cr>
-
-nnoremap <leader>c :wall<cr>:make<cr>
-
-func! MapSpecFile()
-  let command = "any_test " . expand("%")
-  exe 'map ,t :wa\|!any_test ' . expand("%") . '<cr>'
-endfunc
 
 " Make field
 nnoremap <leader>mf yiwo@<esc>pa<space>=<space><esc>p
 " Toggle instance var
 nnoremap <leader>mi :call ToggleInstanceVar()<cr>
-nnoremap <leader>G :GHCi<space>
 
 func! ToggleInstanceVar()
   let saved = getpos('.')
@@ -283,3 +268,69 @@ nnoremap <leader>mq 0wiqualified<space><esc>$bea<space>as<space>
 " Add a language pragma to a haskell file
 nnoremap <leader>ml ggO{-#<space>LANGUAGE<space><space>#-}<esc>bhi
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" RUNNING TESTS
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! RunTests(filename)
+    " Write the file and run tests for the given filename
+    :w
+    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo;echo
+    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo;echo
+    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo;echo
+    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo;echo
+    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo;echo
+    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo;echo
+    exec '!any_test ' . a:filename
+    return
+
+    if match(a:filename, '\.feature$') != -1
+        exec ":!script/features " . a:filename
+    else
+        if filereadable("script/test")
+            exec ":!script/test " . a:filename
+        elseif filereadable("Gemfile")
+            exec ":!bundle exec rspec --color " . a:filename
+        else
+            exec ":!rspec --color " . a:filename
+        end
+    end
+endfunction
+
+function! SetTestFile()
+    " Set the spec file that tests will be run for.
+    let t:grb_test_file=@%
+endfunction
+
+function! RunTestFile(...)
+    if a:0
+        let command_suffix = a:1
+    else
+        let command_suffix = ""
+    endif
+
+    " Run the tests for the previously-marked file.
+    let in_test_file = match(expand("%"), '\(.feature\|_spec.rb\)$') != -1
+    if in_test_file
+        call SetTestFile()
+    elseif !exists("t:grb_test_file")
+        return
+    end
+    call RunTests(t:grb_test_file . command_suffix)
+endfunction
+
+function! RunNearestTest()
+    let spec_line_number = line('.')
+    call RunTestFile(":" . spec_line_number . " -b")
+endfunction
+
+map <leader>t :call RunTestFile()<cr>
+map <leader>T :call RunNearestTest()<cr>
+map <leader>a :call RunTests('')<cr>
+" map <leader>c :w\|:!script/features<cr>
+" map <leader>w :w\|:!script/features --profile wip<cr>
+
+" nnoremap <leader>ms :call MapSpecFile()<cr>
+func! MapSpecFile()
+  let command = "any_test " . expand("%")
+  exe 'map ,t :wa\|!any_test ' . expand("%") . '<cr>'
+endfunc

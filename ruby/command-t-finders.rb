@@ -1,55 +1,77 @@
-class Finder < Struct.new(:matcher, :opener)
+class Finder < Struct.new(:generator, :opener)
+  # 'DSL' style
+  def self.present(&blk)
+    v = base
+    v.instance_eval(&blk)
+    v.show!
+  end
+
+  # 'fluent' style
   def self.base
     Finder.new(proc { |str| [] }, proc { |sel| })
   end
 
+  ###################################
+  ### CommandT::Matcher interface
+
   def sorted_matches_for str, options = {}
-    matcher[str]
+    generator[str]
   end
 
   def open_selection(command, selection, options)
-    # Un-escape spaces introduced by sanitize
+    # Un-escape spaces introduced by sanitize (command-t internal thing)
     opener[selection.gsub("\\ ", " ").strip] 
   end
 
-  def find_command(&p)
-    self.matcher = proc { |str| 
-      str.empty? ? [] : begin
-                          xs = `#{p[str]}`.chomp.split("\n")
-                          $?.success? ? xs : []
-                        end
-    }
+  ###################################
+
+  # GENERATORS 
+
+  def generate_with(&p)
+    self.generator = p
     self
   end
-
-  def with_matcher(&p)
-    self.matcher = p
-    self
+  
+  def run_command(&command_creator)
+    generate_with { |input| 
+      return [] if input.empty?
+      xs = `#{command_creator[input]}`.chomp.split("\n")
+      $?.success? ? xs : []
+    }
   end
 
   def grep_list(xs)
-    self.matcher = proc { |str|
-      xs.grep(/#{str}/)
-    }
+    generate_with { |input| xs.grep(/#{input}/) }
+  end
+
+  def match_list(xs, max_items = 100)
+    class <<xs; def paths; self; end; end unless xs.respond_to?(:paths)
+    m = CommandT::Matcher.new(xs)
+    generate_with { |test| m.matches_for(test).sort_by { |x| -x.score }[0..max_items].map { |x| x.to_s } }
+  end
+
+  # SELECTORS
+
+  def open_with(&p)
+    self.opener = p
     self
   end
 
   def vim_handler(&p)
-    self.opener = proc { |str| 
-      cmds = p[str]
-      cmds.split("\n").each do |c| VIM::command(c) end
+    open_with { |selection|
+      VIM::command(p[selection])
     }
-    self
   end
 
   def copy_selection
     vim_handler { |selection| ":let @* = \"#{selection}\"" }
-    self
   end
   
   def open_selection_
     vim_handler { |selection| "silent :e #{selection}" }
-    self
   end
 
+  def show!
+    $command_t.show_finder(self)
+  end
 end
