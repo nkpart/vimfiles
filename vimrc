@@ -208,12 +208,12 @@ ruby << RUBY
 RUBY
 endfunction
 
-function! s:CommandTShowMyFileFinder()
+function! s:CommandTShowMyFileFinder(base)
 ruby << RUBY
   wildignore = ::VIM::evaluate('&wildignore').split(",").map { |v| "-not -name \"#{v}\"" }.join(" ")
-  files = `find * #{wildignore} -type f`.split("\n")
+  files = `find #{::VIM::evaluate("a:base")} #{wildignore} -type f`.split("\n")
   Finder.present do
-    match_list(files, 10)
+    match_list(files, 15, 2)
     open_selection_
   end
 RUBY
@@ -221,14 +221,15 @@ endfunction
 
 " Command Ts
 nnoremap <leader>gF :CommandTFlush<cr>:CommandT<cr>
-nnoremap <leader>gf :call <SID>CommandTShowMyFileFinder()<cr>
+nnoremap <leader>gf :call <SID>CommandTShowMyFileFinder('*')<cr>
 nnoremap <leader>gb :CommandTFlush<cr>:CommandTBuffer<cr>
 nnoremap <leader>gh :call <SID>CommandTShowHoogleFinder()<cr>
 nnoremap <leader>gg :call <SID>CommandTShowGemfileFinder()<cr>
 nnoremap <leader>gt :call <SID>CommandTShowMyTagFinder()<cr>
   " Rails
 nnoremap <leader>gs :CommandTFlush<cr>:CommandT spec<cr>
-nnoremap <leader>gm :CommandTFlush<cr>:CommandT app/models<cr>
+" nnoremap <leader>gm :CommandTFlush<cr>:CommandT app/models<cr>
+nnoremap <leader>gm :call <SID>CommandTShowMyFileFinder('app/models')<cr>
 nnoremap <leader>gl :CommandTFlush<cr>:CommandT lib<cr>
 nnoremap <leader>gv :CommandTFlush<cr>:CommandT app/views<cr>
 nnoremap <leader>gc :CommandTFlush<cr>:CommandT app/controllers<cr>

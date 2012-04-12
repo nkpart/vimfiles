@@ -44,10 +44,16 @@ class Finder < Struct.new(:generator, :opener)
     generate_with { |input| xs.grep(/#{input}/) }
   end
 
-  def match_list(xs, max_items = 100)
+  def match_list(xs, max_items = 100, min_input = 0)
     class <<xs; def paths; self; end; end unless xs.respond_to?(:paths)
     m = CommandT::Matcher.new(xs)
-    generate_with { |test| m.matches_for(test).sort_by { |x| -x.score }[0..max_items].map { |x| x.to_s } }
+    generate_with { |test| 
+      if min_input > 0 && test && test.length < min_input
+        []
+      else
+        m.matches_for(test).sort_by { |x| -x.score }[0..max_items].map { |x| x.to_s } 
+      end
+    }
   end
 
   # SELECTORS
