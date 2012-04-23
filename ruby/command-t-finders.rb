@@ -34,9 +34,12 @@ class Finder < Struct.new(:generator, :opener)
   
   def run_command(&command_creator)
     generate_with { |input| 
-      return [] if input.empty?
-      xs = `#{command_creator[input]}`.chomp.split("\n")
-      $?.success? ? xs : []
+      if input.empty?
+        []
+      else
+        xs = `#{command_creator[input]}`.chomp.split("\n")
+        $?.success? ? xs : []
+      end
     }
   end
 

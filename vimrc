@@ -6,8 +6,12 @@ set wildignore+=*/content_bundles/*/original/*
 set wildignore+=*/rss_images/*.jpg,*/rss_images/*.gif
 set wildignore+=vendor/cache/*
 set wildignore+=_darcs/*
+set wildignore+=cabal-src/*
+set wildignore+=.hsenv/*
 
 set tags+=gems.tags
+set tags+=cabal.tags
+set iskeyword=a-z,A-Z,_,.,39 " For hothasktags, tags can be qualified
 
 " Prevents vim getting really sluggish if there are long lines of data
 set synmaxcol=400
@@ -84,6 +88,7 @@ set rtp+=~/.vim/vundle.git
 call vundle#rc()
 
 " The Bundles
+Bundle "msanders/snipmate.vim"
 Bundle "https://github.com/scrooloose/syntastic.git"
 Bundle "https://github.com/Lokaltog/vim-powerline.git"
 Bundle "jellybeans.vim"
@@ -155,13 +160,27 @@ ruby $LOAD_PATH << File.expand_path("~/.vim/ruby")
 ruby require "command-t-finders"
 function! s:CommandTShowHoogleFinder()
 ruby << RUBY
-Finder.base.
-  run_command { |str| 
+Finder.present do
+  run_command { |str|
     modules = VIM::evaluate("exists(\"g:hoogle_modules\") ? g:hoogle_modules : \"\" ")
     %`hoogle #{modules} -n 10 "#{str}"` 
-  }.
-  copy_selection.
-  show!
+  }
+  vim_handler { |selection|
+    fname = selection[/(.*)\s+(.*)\s+::.*/, 2]
+    type = selection.split("::").last.split("=>").last
+    if fname && type
+      parts = type.scan(/(\(.+?\)+|[\[\]\w]+[ \[\]\w]*)/)
+      parts.pop
+      vs = []
+      parts.each_with_index { |t, i|
+        vs << "${#{i+1}:#{t}}"
+      }
+      "call feedkeys(\"i\\<c-r>=Snip(\\\"#{fname} #{vs.join(' ')}\\\")\\<cr>\")"
+    else
+      ""
+    end
+  }
+end
 RUBY
 endfunction
 
@@ -242,7 +261,6 @@ nnoremap <leader>T :silent :GhcModTypeClear<cr>
 nnoremap <leader>c :wa<cr>:GhcModCheck<cr>
 
 nnoremap <CR> :noh<cr>
-inoremap jj <esc>:ccl<cr>:noh<cr>
 
 nnoremap <leader>s <C-w>v<C-w>w:A<cr> " Split with alternate
 
@@ -335,3 +353,37 @@ func! MapSpecFile()
   let command = "any_test " . expand("%")
   exe 'map ,t :wa\|!any_test ' . expand("%") . '<cr>'
 endfunc
+
+fun! Snip(snippet)
+	if exists('g:SuperTabMappingForward')
+		if g:SuperTabMappingForward == "<tab>"
+			let SuperTabKey = "\<c-n>"
+		elseif g:SuperTabMappingBackward == "<tab>"
+			let SuperTabKey = "\<c-p>"
+		endif
+	endif
+
+	if pumvisible() " Update snippet if completion is used, or deal with supertab
+		if exists('SuperTabKey')
+			call feedkeys(SuperTabKey) | return ''
+		endif
+		call feedkeys("\<esc>a", 'n') " Close completion menu
+		call feedkeys("\<tab>") | return ''
+	endif
+
+	if exists('g:snipPos') | return snipMate#jumpTabStop(0) | endif
+
+  if a:snippet != ''
+    return snipMate#expandSnip(a:snippet, col('.'))
+  endif
+
+	if exists('SuperTabKey')
+		call feedkeys(SuperTabKey)
+		return ''
+	endif
+	return "\<tab>"
+endf
+
+nnoremap <leader>1 i<C-r>=Snip("a ${1:one} $1 b")<cr>
+
+
