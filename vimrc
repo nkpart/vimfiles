@@ -91,6 +91,9 @@ call vundle#rc()
 Bundle "msanders/snipmate.vim"
 Bundle "https://github.com/scrooloose/syntastic.git"
 Bundle "https://github.com/Lokaltog/vim-powerline.git"
+let g:command_t_finder_name=""
+let g:Powerline_cache_enabled=0
+
 Bundle "jellybeans.vim"
 Bundle "git://github.com/nkpart/command-t.git"
 Bundle "git://github.com/mileszs/ack.vim.git" 
@@ -151,25 +154,18 @@ au BufRead,BufNewFile {COMMIT_EDITMSG} set ft=gitcommit
 nnoremap <leader><leader> <C-^>
 " Sets a mark then start an ack search
 nnoremap <leader>aa mA:Ack<space>
-nnoremap <leader>ad mA:Ack<space>"def (self\.)?<cword>"<cr>
-nnoremap <leader>ac mA:Ack<space>"<<<<"<cr><C-w>w
 
 runtime finders.vim
 
 " Command Ts
-nnoremap <leader>gF :CommandTFlush<cr>:CommandT<cr>
 nnoremap <leader>gf :call CommandTShowMyFileFinder('*')<cr>
-nnoremap <leader>gb :CommandTFlush<cr>:CommandTBuffer<cr>
 nnoremap <leader>gh :call CommandTShowHoogleFinder()<cr>
-inoremap <C-\> :call CommandTShowHoogleFinder()<cr>
 nnoremap <leader>gg :call CommandTShowGemfileFinder()<cr>
 nnoremap <leader>gt :call CommandTShowMyTagFinder()<cr>
   " Rails
-nnoremap <leader>gs :CommandTFlush<cr>:CommandT spec<cr>
+nnoremap <leader>gs :call CommandTShowMyFileFinder('spec')<cr>
 nnoremap <leader>gm :call GitStatusFinder()<cr>
-nnoremap <leader>gl :CommandTFlush<cr>:CommandT lib<cr>
-nnoremap <leader>gv :CommandTFlush<cr>:CommandT app/views<cr>
-nnoremap <leader>gc :CommandTFlush<cr>:CommandT app/controllers<cr>
+nnoremap <leader>gc :call CommandTShowMyFileFinder('app/controllers')<cr>
 
 nnoremap <C-j> :cn<cr>
 nnoremap <C-k> :cp<cr> 

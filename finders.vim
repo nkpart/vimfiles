@@ -4,6 +4,7 @@ require "command-t-finders"
 RUBY
 
 function! CommandTShowMyFileFinder(base)
+  let g:command_t_finder_name="find"
 ruby << RUBY
   wildignore = ::VIM::evaluate('&wildignore').split(",").map { |v| "-not -name \"#{v}\"" }.join(" ")
   files = `find #{::VIM::evaluate("a:base")} #{wildignore} -type f`.split("\n")
@@ -15,6 +16,7 @@ RUBY
 endfunction
 
 function! GitStatusFinder()
+  let g:command_t_finder_name="git status"
 ruby << RUBY
   files = `git status -s --porcelain`.chomp.split("\n")
   Finder.present do
@@ -27,6 +29,7 @@ RUBY
 endfunction
 
 function! CommandTShowGemfileFinder()
+  let g:command_t_finder_name="Gemfile.lock"
 ruby << RUBY
   pwd = ::VIM::evaluate 'getcwd()'
   gems = IO.read(File.join(pwd, "Gemfile.lock"))[/specs:(.*)PLATFORMS/m,1].
@@ -45,6 +48,7 @@ RUBY
 endfunction
 
 function! CommandTShowHoogleFinder()
+  let g:command_t_finder_name="hoogle"
 ruby << RUBY
 Finder.present do
   run_command { |str|
@@ -57,6 +61,7 @@ RUBY
 endfunction
 
 function! CommandTShowMyTagFinder()
+  let g:command_t_finder_name="tags"
 ruby << RUBY
 Finder.present do
   generate_with { |str| 
