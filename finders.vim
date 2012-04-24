@@ -14,6 +14,18 @@ ruby << RUBY
 RUBY
 endfunction
 
+function! GitStatusFinder()
+ruby << RUBY
+  files = `git status -s --porcelain`.chomp.split("\n")
+  Finder.present do
+    match_list(files)
+    vim_handler { |sel|
+      "silent! :e #{sel[3..-1]}"
+    }
+  end
+RUBY
+endfunction
+
 function! CommandTShowGemfileFinder()
 ruby << RUBY
   pwd = ::VIM::evaluate 'getcwd()'

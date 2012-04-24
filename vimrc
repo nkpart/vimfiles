@@ -166,7 +166,7 @@ nnoremap <leader>gg :call CommandTShowGemfileFinder()<cr>
 nnoremap <leader>gt :call CommandTShowMyTagFinder()<cr>
   " Rails
 nnoremap <leader>gs :CommandTFlush<cr>:CommandT spec<cr>
-nnoremap <leader>gm :call CommandTShowMyFileFinder('app/models')<cr>
+nnoremap <leader>gm :call GitStatusFinder()<cr>
 nnoremap <leader>gl :CommandTFlush<cr>:CommandT lib<cr>
 nnoremap <leader>gv :CommandTFlush<cr>:CommandT app/views<cr>
 nnoremap <leader>gc :CommandTFlush<cr>:CommandT app/controllers<cr>
