@@ -22,7 +22,7 @@ ruby << RUBY
   Finder.present do
     match_list(files)
     vim_handler { |sel|
-      "silent! :e #{sel[3..-1]}"
+      "silent! :e #{sel[/.*\s+(.*)/, 1]}"
     }
   end
 RUBY
