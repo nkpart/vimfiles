@@ -9,7 +9,7 @@ ruby << RUBY
   wildignore = ::VIM::evaluate('&wildignore').split(",").map { |v| "-not -name \"#{v}\"" }.join(" ")
   files = `find #{::VIM::evaluate("a:base")} #{wildignore} -type f`.split("\n")
   Finder.present do
-    match_list(files, 30, 2)
+    match_list(files, 30, 0)
     open_selection_
   end
 RUBY

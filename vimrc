@@ -87,8 +87,12 @@ runtime macros/matchit.vim
 set rtp+=~/.vim/vundle.git
 call vundle#rc()
 
+let g:syntastic_mode_map = { 'mode': 'passive' }
+
 " The Bundles
 Bundle "msanders/snipmate.vim"
+Bundle "ragtag.vim"
+Bundle "cocoa.vim"
 Bundle "https://github.com/scrooloose/syntastic.git"
 Bundle "https://github.com/Lokaltog/vim-powerline.git"
 let g:command_t_finder_name=""
@@ -105,10 +109,10 @@ Bundle "Markdown"
 Bundle "repeat.vim"
 Bundle "surround.vim"
 Bundle "tComment"
-Bundle "https://github.com/lukerandall/haskellmode-vim.git"
 Bundle "https://github.com/pbrisbin/html-template-syntax.git"
 Bundle "https://github.com/Shougo/vimproc.git"
 Bundle "https://github.com/eagletmt/ghcmod-vim.git"
+Bundle "https://github.com/ujihisa/neco-ghc.git"
   " Useful text objects
 Bundle "https://github.com/kana/vim-textobj-user.git"
 Bundle "https://github.com/nelstrom/vim-textobj-rubyblock.git" 
@@ -124,21 +128,21 @@ else
   colorscheme jellybeans_jason
 end
 
-" Haskell config
-au Bufenter *.hs compiler ghc
-function! SetToCabalBuild()
-  if glob("*.cabal") != ''
-    set makeprg=cabal\ build
-  endif
-endfunction
-autocmd BufEnter *.hs,*.lhs :call SetToCabalBuild()
+" " Haskell config
+" au Bufenter *.hs compiler ghc
+" function! SetToCabalBuild()
+"   if glob("*.cabal") != ''
+"     set makeprg=cabal\ build
+"   endif
+" endfunction
+" autocmd BufEnter *.hs,*.lhs :call SetToCabalBuild()
 
 let g:haddock_browser = "open"
 let g:haddock_browser_callformat = "%s %s"
 
 " haskell-mode.vim does bad things to shellpipe that break ack, this is the fix
-let g:original_shellpipe=&shellpipe
-au QuickFixCmdPre grep setlocal shellpipe=2>&1\|tee
+" let g:original_shellpipe=&shellpipe
+" au QuickFixCmdPre grep setlocal shellpipe=2>&1\|tee
 
 set statusline="%<%f\ %h%m%r%=%-14.(%l,%c%V%)\ %P"
 
@@ -170,9 +174,9 @@ nnoremap <leader>gc :call CommandTShowMyFileFinder('app/controllers')<cr>
 nnoremap <C-j> :cn<cr>
 nnoremap <C-k> :cp<cr> 
 
-nnoremap <leader>t :GhcModType<cr>
+nnoremap <leader>/ :GhcModType<cr>
 nnoremap <leader>T :silent :GhcModTypeClear<cr>
-nnoremap <leader>c :wa<cr>:GhcModCheck<cr>
+nnoremap <leader>c :wa<cr>:SyntasticCheck<cr>
 
 nnoremap <CR> :noh<cr>
 
@@ -260,7 +264,6 @@ map <leader>t :call RunTestFile()<cr>
 map <leader>T :call RunNearestTest()<cr>
 map <leader>a :call RunTests('')<cr>
 " map <leader>c :w\|:!script/features<cr>
-" map <leader>w :w\|:!script/features --profile wip<cr>
 
 " nnoremap <leader>ms :call MapSpecFile()<cr>
 func! MapSpecFile()
@@ -298,6 +301,11 @@ fun! Snip(snippet)
 	return "\<tab>"
 endf
 
-nnoremap <leader>1 i<C-r>=Snip("a ${1:one} $1 b")<cr>
+nnoremap <leader>md :call DiffAnnotate()<cr>
 
+function! DiffAnnotate()
+ruby <<RUBY
+  
+RUBY
+endfunction
 
