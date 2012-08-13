@@ -32,12 +32,12 @@ class Finder < Struct.new(:generator, :opener)
     self
   end
   
-  def run_command(&command_creator)
+  def run_command(limit = 100, &command_creator)
     generate_with { |input| 
       if input.empty?
         []
       else
-        xs = `#{command_creator[input]}`.chomp.split("\n")
+        xs = `#{command_creator[input]}`.chomp.split("\n")[0, limit]
         $?.success? ? xs : []
       end
     }

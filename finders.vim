@@ -3,20 +3,34 @@ $LOAD_PATH << File.expand_path("~/.vim/ruby")
 require "command-t-finders"
 RUBY
 
-function! CommandTShowMyFileFinder(base)
-  let g:command_t_finder_name="find"
+function! AckLol()
 ruby << RUBY
-  wildignore = ::VIM::evaluate('&wildignore').split(",").map { |v| "-not -name \"#{v}\"" }.join(" ")
+Finder.present do
+  run_command(15) { |str|
+    cleaned = str.gsub(/\s+/, ".*")
+    %`ack --nogroup "#{cleaned}"`
+  }
+  vim_handler { |sel|
+    _, line, num = *sel.match(/(.*):(\d+).*/)
+    ":e +#{num} #{line}"
+  }
+end
+RUBY
+endfunction
+
+function! CommandTShowMyFileFinder(base)
+ruby << RUBY
+  wildignore = ::VIM::evaluate('&wildignore').split(",").map { |v| "-not -path \"#{v}\"" }.join(" ")
   files = `find #{::VIM::evaluate("a:base")} #{wildignore} -type f`.split("\n")
   Finder.present do
     match_list(files, 30, 0)
     open_selection_
   end
 RUBY
+nmap <buffer> @ <cr>/
 endfunction
 
 function! GitStatusFinder()
-  let g:command_t_finder_name="git status"
 ruby << RUBY
   files = `git status -s --porcelain`.chomp.split("\n")
   Finder.present do
@@ -29,7 +43,6 @@ RUBY
 endfunction
 
 function! CommandTShowGemfileFinder()
-  let g:command_t_finder_name="Gemfile.lock"
 ruby << RUBY
   pwd = ::VIM::evaluate 'getcwd()'
   gems = IO.read(File.join(pwd, "Gemfile.lock"))[/specs:(.*)PLATFORMS/m,1].
@@ -48,11 +61,10 @@ RUBY
 endfunction
 
 function! CommandTShowHoogleFinder()
-  let g:command_t_finder_name="hoogle"
 ruby << RUBY
 Finder.present do
   run_command { |str|
-    modules = VIM::evaluate("exists(\"g:hoogle_modules\") ? g:hoogle_modules : \"\" ")
+    _,modules,_,str = *str.match(/((\+[a-z,\-]+\s)*)(.*)/)
     %`hoogle #{modules} -n 10 "#{str}"` 
   }
   copy_selection
@@ -61,7 +73,6 @@ RUBY
 endfunction
 
 function! CommandTShowMyTagFinder()
-  let g:command_t_finder_name="tags"
 ruby << RUBY
 Finder.present do
   generate_with { |str| 
@@ -86,5 +97,27 @@ Finder.present do
     "silent! e #{file} | silent! tag #{tag} | normal zz"
   }
 end
+RUBY
+endfunction
+
+function! ShowSchemaFinder()
+ruby << RUBY
+  pwd = ::VIM::evaluate 'getcwd()'
+  tables = IO.read(File.join(pwd, "db", "schema.rb")).
+    split("\n").
+    zip((1..1000).to_a).
+    map { |(line, num)|
+      x = line[/create_table \"(.*)\",.*/, 1]
+      x && [x, num]
+    }.
+    compact
+  lines = Hash[*tables.flatten]
+  Finder.present do
+    match_list(tables.map(&:first))
+    vim_handler { |selection|
+      line = lines[selection]
+      "silent edit +#{line} db/schema.rb | normal zt"
+    }
+  end
 RUBY
 endfunction
