@@ -32,7 +32,7 @@ set clipboard+=unnamed " yank goes to clipboard
 set modeline
 set noswapfile
 set nowritebackup
-set number
+" set number
 
 set hidden " prevents losing undo history after save
 
@@ -67,7 +67,7 @@ set encoding=utf-8
 set wildmenu
 set visualbell
 set ttyfast
-set laststatus=2 " Always show the statusline
+set laststatus=0
 
 let mapleader = ","
 
@@ -96,11 +96,8 @@ Bundle "Shougo/neocomplcache"
 Bundle "majutsushi/tagbar"
 
 " Languages
-Bundle "VimClojure"
 Bundle "pufuwozu/roy", { 'rtp': 'misc/vim' }
 Bundle "vim-ruby/vim-ruby" 
-Bundle "derekwyatt/vim-scala"
-Bundle "derekwyatt/vim-sbt"
   " Toggles ruby blocks
 Bundle "jgdavey/vim-blockle"
 Bundle "tpope/vim-rails"
@@ -114,11 +111,9 @@ Bundle "pbrisbin/html-template-syntax"
 Bundle "ujihisa/neco-ghc"
 
 " Visual
-Bundle "CSApprox"
 Bundle "tomasr/molokai"
 Bundle "nanotech/jellybeans.vim"
 Bundle "ColorV"
-Bundle "Lokaltog/vim-powerline"
 
 " Text objects
 Bundle "kana/vim-textobj-user"
@@ -151,22 +146,18 @@ if has("gui_running")
   set linespace=3
   colorscheme smyck
 else
-  if $PRESENTATION_MODE
-    set background=light
-    colorscheme github
-  else
+  " if $PRESENTATION_MODE
+    " set background=light
+    " colorscheme github
+  " else
     set background=dark
-    " tir_black
-    " colorscheme solarized
-    " colorscheme jellybeans
-    colorscheme grb4
+    let g:solarized_termcolors=16
+    colorscheme solarized
+    " tir_black, jellybeans, grb4, smyck, molokai
     " hi Search ctermbg=234
-    " colorscheme smyck
-    " colorscheme molokai
-    hi Define ctermfg=9
-  end
+    " hi Define ctermfg=9
+  " end
 end
-
 " AUTOBOTS ASSEMBLE
 " Write all files whenever
 au BufLeave,FocusLost * silent! wall
@@ -180,6 +171,7 @@ au BufRead,BufNewFile *.hs set path+=templates
 au BufRead,BufNewFile *.hs set path+=src
 au BufRead,BufNewFile *.hs set suffixesadd+=.hamlet
 au BufRead,BufNewFile *.hs setlocal omnifunc=necoghc#omnifunc 
+au BufRead,BufNewFile *.rb setlocal omnifunc=necoghc#omnifunc 
 " Autocreate directories for a new file
 augroup BWCCreateDir
   au!
