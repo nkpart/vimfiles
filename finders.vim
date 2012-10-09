@@ -6,7 +6,7 @@ RUBY
 function! AckLol()
 ruby << RUBY
 Finder.present do
-  run_command(15) { |str|
+  run_command(15, 5) { |str|
     cleaned = str.gsub(/\s+/, ".*")
     %`ack --nogroup "#{cleaned}"`
   }

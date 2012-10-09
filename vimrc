@@ -85,7 +85,7 @@ call vundle#rc()
 Bundle "gmarik/vundle"
 Bundle "sjl/vitality.vim"
 Bundle "scrooloose/syntastic"
-let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['haskell', 'scala'] }
+let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['scala'] }
 Bundle "nkpart/command-t"
 Bundle "mileszs/ack.vim" 
 Bundle "repeat.vim"
@@ -98,6 +98,7 @@ Bundle "majutsushi/tagbar"
 " Languages
 Bundle "pufuwozu/roy", { 'rtp': 'misc/vim' }
 Bundle "vim-ruby/vim-ruby" 
+Bundle 'derekwyatt/vim-scala'
   " Toggles ruby blocks
 Bundle "jgdavey/vim-blockle"
 Bundle "tpope/vim-rails"
@@ -110,10 +111,11 @@ Bundle "eagletmt/ghcmod-vim"
 Bundle "pbrisbin/html-template-syntax"
 Bundle "ujihisa/neco-ghc"
 
-" Visual
+" Visual / UI / Colors
 Bundle "tomasr/molokai"
 Bundle "nanotech/jellybeans.vim"
 Bundle "ColorV"
+Bundle "chriskempson/base16-vim"
 
 " Text objects
 Bundle "kana/vim-textobj-user"
@@ -151,9 +153,9 @@ else
     " colorscheme github
   " else
     set background=dark
-    let g:solarized_termcolors=16
-    colorscheme solarized
-    " tir_black, jellybeans, grb4, smyck, molokai
+    " colorscheme grb4
+    colorscheme base16-monokai
+    " tir_black, jellybeans, grb4, smyck, molokai, solarized
     " hi Search ctermbg=234
     " hi Define ctermfg=9
   " end
@@ -220,6 +222,7 @@ inoremap <C-l> <esc>la
 
 nnoremap <leader>/ :GhcModTypeClear<cr>
 nnoremap <leader>. :GhcModType<cr>
+nnoremap <leader>T :GhcModTypeInsert<cr>
 nnoremap <leader>c :wa<cr>:GhcModCheckAsync<cr>
 
 nnoremap <cr> :noh<cr>
