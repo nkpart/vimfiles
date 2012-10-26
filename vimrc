@@ -123,21 +123,7 @@ Bundle "nelstrom/vim-textobj-rubyblock"
 Bundle "vim-scripts/argtextobj.vim" 
 Bundle "michaeljsmith/vim-indent-object" 
 
-" Misc
-Bundle "ragtag.vim"
-
- " Use option-J/K to bubble lines up and down
-Bundle 'vim-scripts/upAndDown'
-nmap <silent> ˚ <Plug>upAndDownUp
-nmap <silent> ∆ <Plug>upAndDownDown
-vmap <silent> ˚ <Plug>upAndDownVisualUp
-vmap <silent> ∆ <Plug>upAndDownVisualDown
-imap <silent> ˚ <Plug>upAndDownInsertUp
-imap <silent> ∆ <Plug>upAndDownInsertDown
-
-
 filetype plugin indent on
-
 
 " VISUAL SETTINGS
 set guioptions-=L
@@ -154,7 +140,7 @@ else
   " else
     set background=dark
     " colorscheme grb4
-    colorscheme base16-monokai
+    colorscheme base16-default
     " tir_black, jellybeans, grb4, smyck, molokai, solarized
     " hi Search ctermbg=234
     " hi Define ctermfg=9
@@ -224,6 +210,8 @@ nnoremap <leader>/ :GhcModTypeClear<cr>
 nnoremap <leader>. :GhcModType<cr>
 nnoremap <leader>T :GhcModTypeInsert<cr>
 nnoremap <leader>c :wa<cr>:GhcModCheckAsync<cr>
+
+inoremap Ll λ
 
 nnoremap <cr> :noh<cr>
 
