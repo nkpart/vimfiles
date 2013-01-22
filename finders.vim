@@ -65,7 +65,7 @@ ruby << RUBY
 Finder.present do
   run_command { |str|
     _,modules,_,str = *str.match(/((\+[a-z,\-]+\s)*)(.*)/)
-    %`hoogle #{modules} -n 10 "#{str}"` 
+    %`cahoogle #{modules} -n 10 "#{str}"` 
   }
   copy_selection
 end
