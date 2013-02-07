@@ -121,14 +121,10 @@ filetype plugin indent on
 
 " VISUAL SETTINGS
 set fillchars=vert:\ 
-set guioptions-=L
-set guioptions-=r
-set guioptions-=T
 set background=dark
 colorscheme base16-default
 
 " AUTOBOTS ASSEMBLE
-
 au BufLeave,FocusLost * silent! wall " Write all files whenever
 au BufRead,BufNewFile {Gemfile,Rakefile,Capfile,*.rake,config.ru} set ft=ruby
 au BufRead,BufNewFile {*.md,*.markdown} set ft=markdown
