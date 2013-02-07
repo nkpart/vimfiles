@@ -8,8 +8,7 @@ set wildignore+=target/*,project/target/*,*/target/scala-*,*/target/*$global*
 set tags+=gems.tags,cabal.tags
 set iskeyword=a-z,A-Z,_,.,39 " For hothasktags, tags can be qualified
 
-" Prevents vim getting really sluggish if there are long lines of data
-set synmaxcol=350
+set synmaxcol=350 " Prevents vim getting really sluggish if there are long lines of data
 set t_Co=256 " Colors yo, we have some.
 
 set statusline=%<%f\ (%{&ft})\ %-4(%m%)%=%-19(%3l,%02c%03V%)
@@ -24,12 +23,9 @@ set clipboard+=unnamed " yank goes to clipboard
 set modeline
 set noswapfile
 set nowritebackup
-
-" Cargoing in from GB
 set number
 set numberwidth=5
 set winwidth=79
-
 set hidden " prevents losing undo history after save
 
 " Search
@@ -141,12 +137,14 @@ augroup END
 
 " KEYS AND WHATNOT
 nnoremap <leader><leader> <C-^>
-
-nnoremap <leader>aa mA:Ack<space>
-
-runtime finders.vim
+nnoremap <leader>aa :Ack<space>
+nnoremap <leader>s <C-w>v<C-w>w:A<cr> " Split with alternate
+nnoremap <C-j> :cn<cr>
+nnoremap <C-k> :cp<cr> 
+nnoremap <cr> :noh<cr>
 
 " Command Ts
+runtime finders.vim
 nnoremap <leader>gf :call CommandTShowMyFileFinder('*')<cr>
 nnoremap <leader>gh :call CommandTShowHoogleFinder()<cr>
 nnoremap <leader>gg :call CommandTShowGemfileFinder()<cr>
@@ -155,7 +153,6 @@ nnoremap <leader>gS :call ShowSchemaFinder()<cr>
 nnoremap <leader>gm :call GitStatusFinder()<cr>
 nnoremap <leader>ga :call AckLol()<cr>
 nnoremap <leader>gw :call Widget()<cr>
-
 " For yesod apps
 function! Widget()
   let dir = expand('%:h')
@@ -167,18 +164,10 @@ function! Widget()
   call CommandTShowMyFileFinder('templates/' . base . '.*')
 endfunction
 
-nnoremap <C-j> :cn<cr>
-nnoremap <C-k> :cp<cr> 
-
-nnoremap <cr> :noh<cr>
-
 nnoremap <leader>/ :GhcModTypeClear<cr>
-" TODO give this something
 " nnoremap <leader>. :GhcModType<cr>
 nnoremap <leader>T :GhcModTypeInsert<cr>
 nnoremap <leader>c :wa<cr>:GhcModCheckAsync<cr>
-
-nnoremap <leader>s <C-w>v<C-w>w:A<cr> " Split with alternate
 
 nnoremap <leader>ms :call MapSpecFile()<cr>
 func! MapSpecFile()
