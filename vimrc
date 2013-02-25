@@ -4,12 +4,20 @@ set wildignore+=*/coverage/*,*/.bundle/*
 set wildignore+=vendor/cache/*
 set wildignore+=cabal-src/*,.hsenv/*
 set wildignore+=target/*,project/target/*,*/target/scala-*,*/target/*$global*
+set wildignore+=*/.git/*
 
 set tags+=gems.tags,cabal.tags
 set iskeyword=a-z,A-Z,_,.,39 " For hothasktags, tags can be qualified
 
 set synmaxcol=350 " Prevents vim getting really sluggish if there are long lines of data
 set t_Co=256 " Colors yo, we have some.
+
+" set showtabline=2
+" set tabline=%!MyTabLine()
+
+function! MyTabLine()
+  return substitute(system("git status --porcelain " . bufname('%') . ' 2>/dev/null || echo'), '\n', '', 'g')
+endfunction
 
 set statusline=%<%f\ (%{&ft})\ %-4(%m%)%=%-19(%3l,%02c%03V%)
 set showcmd
@@ -128,6 +136,8 @@ au BufRead,BufNewFile *.coffee set filetype=coffee
 au BufRead,BufNewFile {COMMIT_EDITMSG} set ft=gitcommit
 au BufRead,BufNewFile {gitconfig,.gitconfig} set ft=gitconfig
 au BufRead,BufNewFile *.hs set path+=templates,src | set suffixesadd+=.hamlet | setlocal omnifunc=necoghc#omnifunc | normal zR
+au BufRead,BufNewFile *.hs set path+=templates,src | set suffixesadd+=.hamlet | setlocal omnifunc=necoghc#omnifunc | normal zR
+au BufRead,BufNewFile {*.h,*.m} set tabstop=4 | set shiftwidth=4 | set softtabstop=4 | set noexpandtab
 
 " Autocreate directories for a new file
 augroup BWCCreateDir
@@ -142,6 +152,8 @@ nnoremap <leader>s <C-w>v<C-w>w:A<cr> " Split with alternate
 nnoremap <C-j> :cn<cr>
 nnoremap <C-k> :cp<cr> 
 nnoremap <cr> :noh<cr>
+nnoremap <leader>d :silent !git diff %<cr><C-l>
+vnoremap S y:exec "silent !git log -p -S\"" . @" . "\""<cr>:redraw!<cr>
 
 " Command Ts
 runtime finders.vim
@@ -151,6 +163,7 @@ nnoremap <leader>gg :call CommandTShowGemfileFinder()<cr>
 nnoremap <leader>gt :call CommandTShowMyTagFinder()<cr>
 nnoremap <leader>gS :call ShowSchemaFinder()<cr>
 nnoremap <leader>gm :call GitStatusFinder()<cr>
+nnoremap <leader>gM :call CommandTListChanges()<cr>
 nnoremap <leader>ga :call AckLol()<cr>
 nnoremap <leader>gw :call Widget()<cr>
 " For yesod apps
@@ -174,3 +187,7 @@ func! MapSpecFile()
   let command = "any_test " . expand("%")
   exe 'map <leader>t :wa\|!any_test ' . expand("%") . '<cr>'
 endfunc
+
+map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
+  \ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
+  \ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>

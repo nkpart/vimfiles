@@ -18,6 +18,33 @@ end
 RUBY
 endfunction
 
+function! CommandTChanges()
+  let shaname = input("SHA: ", "HEAD")
+  CommitChanges(shaname)
+endfunction
+
+function! CommitChanges(commit)
+ruby << RUBY
+  files = `git diff-tree --no-commit-id --name-only -r #{::VIM::evaluate("a:commit")}`.chomp.split("\n")
+  Finder.present do
+    match_list(files)
+    open_selection_
+  end
+RUBY
+endfunction
+
+function! CommandTListChanges()
+ruby << RUBY
+  commits = `git log --oneline --decorate -n 15`.chomp.split("\n")
+  Finder.present do
+    match_list(commits)
+    vim_handler { |sel|
+      ":call CommitChanges(\"#{sel.split.first}\")"
+    }
+  end
+RUBY
+endfunction
+
 function! CommandTShowMyFileFinder(base)
 ruby << RUBY
   wildignore = ::VIM::evaluate('&wildignore').split(",").map { |v| "-not -path \"#{v}\"" }.join(" ")
