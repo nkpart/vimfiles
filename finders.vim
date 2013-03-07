@@ -8,7 +8,7 @@ ruby << RUBY
 Finder.present do
   run_command(15, 5) { |str|
     cleaned = str.gsub(/\s+/, ".*")
-    %`ack --nogroup "#{cleaned}"`
+    %`ag --nogroup "#{cleaned}"`
   }
   vim_handler { |sel|
     _, line, num = *sel.match(/(.*):(\d+).*/)

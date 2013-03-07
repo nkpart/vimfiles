@@ -1,5 +1,5 @@
 " Used by command-t to filter its list. TODO make ack use the same?
-set wildignore+=*.jar,*.o,*.hi,*.obj,*.class,dist/**,build/**,*.png,*~,static/tmp/*,tmp/*,**/*.build/**,cabal-dev,*.gz,*.p12,*.zip,_darcs/*
+set wildignore+=*.jar,*.o,*.hi,*.obj,*.class,dist/**,build/**,*.png,*~,static/tmp/*,tmp/*,**/*.build/**,cabal-dev/*,*.gz,*.p12,*.zip,_darcs/*
 set wildignore+=*/coverage/*,*/.bundle/*
 set wildignore+=vendor/cache/*
 set wildignore+=cabal-src/*,.hsenv/*
@@ -14,10 +14,9 @@ set t_Co=256 " Colors yo, we have some.
 
 " set showtabline=2
 " set tabline=%!MyTabLine()
-
-function! MyTabLine()
-  return substitute(system("git status --porcelain " . bufname('%') . ' 2>/dev/null || echo'), '\n', '', 'g')
-endfunction
+" function! MyTabLine()
+  " return substitute(system("git status --porcelain " . bufname('%') . ' 2>/dev/null || echo'), '\n', '', 'g')
+" endfunction
 
 set statusline=%<%f\ (%{&ft})\ %-4(%m%)%=%-19(%3l,%02c%03V%)
 set showcmd
@@ -83,6 +82,7 @@ call vundle#rc()
 Bundle "gmarik/vundle"
 Bundle "sjl/vitality.vim"
 Bundle "scrooloose/syntastic"
+Bundle "airblade/vim-gitgutter"
 let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['scala'] }
 Bundle "nkpart/command-t"
 Bundle "mileszs/ack.vim" 
@@ -128,6 +128,7 @@ set fillchars=vert:\
 set background=dark
 colorscheme base16-default
 
+highlight clear SignColumn
 " AUTOBOTS ASSEMBLE
 au BufLeave,FocusLost * silent! wall " Write all files whenever
 au BufRead,BufNewFile {Gemfile,Rakefile,Capfile,*.rake,config.ru} set ft=ruby
@@ -149,11 +150,13 @@ augroup END
 nnoremap <leader><leader> <C-^>
 nnoremap <leader>aa :Ack<space>
 nnoremap <leader>s <C-w>v<C-w>w:A<cr> " Split with alternate
+nnoremap <leader>G :!git<space> 
 nnoremap <C-j> :cn<cr>
 nnoremap <C-k> :cp<cr> 
 nnoremap <cr> :noh<cr>
 nnoremap <leader>d :silent !git diff %<cr><C-l>
 vnoremap S y:exec "silent !git log -p -S\"" . @" . "\""<cr>:redraw!<cr>
+nnoremap <Space> :wa<cr>
 
 " Command Ts
 runtime finders.vim
