@@ -45,10 +45,22 @@ ruby << RUBY
 RUBY
 endfunction
 
+function! CommandTShowMyFileFinder2()
+ruby << RUBY
+  wildignore = ::VIM::evaluate('&wildignore').split(",").map { |v| "--ignore \"#{v}\"" }.join(" ")
+  files = `ag -g \".*\" #{wildignore}`.split("\n").map { |line| line.sub(/^\.\//, "") }
+  Finder.present do
+    match_list(files, 30, 0)
+    open_selection_
+  end
+RUBY
+nmap <buffer> @ <cr>/
+endfunction
+
 function! CommandTShowMyFileFinder(base)
 ruby << RUBY
   wildignore = ::VIM::evaluate('&wildignore').split(",").map { |v| "-not -path \"#{v}\"" }.join(" ")
-  files = `find #{::VIM::evaluate("a:base")} #{wildignore} -type f`.split("\n")
+  files = IO.popen("find #{::VIM::evaluate("a:base")} #{wildignore} -type f").read.split("\n")
   Finder.present do
     match_list(files, 30, 0)
     open_selection_
@@ -92,7 +104,7 @@ ruby << RUBY
 Finder.present do
   run_command { |str|
     _,modules,_,str = *str.match(/((\+[a-z,\-]+\s)*)(.*)/)
-    %`cahoogle #{modules} -n 10 "#{str}"` 
+    %`hoogle #{modules} -n 10 "#{str}"` 
   }
   copy_selection
 end
