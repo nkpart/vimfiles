@@ -57,18 +57,6 @@ RUBY
 nmap <buffer> @ <cr>/
 endfunction
 
-function! CommandTShowMyFileFinder(base)
-ruby << RUBY
-  wildignore = ::VIM::evaluate('&wildignore').split(",").map { |v| "-not -path \"#{v}\"" }.join(" ")
-  files = IO.popen("find #{::VIM::evaluate("a:base")} #{wildignore} -type f").read.split("\n")
-  Finder.present do
-    match_list(files, 30, 0)
-    open_selection_
-  end
-RUBY
-nmap <buffer> @ <cr>/
-endfunction
-
 function! GitStatusFinder()
 ruby << RUBY
   files = `git status -s --porcelain`.chomp.split("\n")

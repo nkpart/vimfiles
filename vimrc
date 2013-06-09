@@ -1,16 +1,18 @@
 " Used by command-t to filter its list. TODO make ack use the same?
+"
+"
 set wildignore+=*.jar,*.o,*.hi,*.obj,*.class,dist/**,build/**,*.png,*~,static/tmp/*,tmp/*,**/*.build/**,cabal-dev/*,*.gz,*.p12,*.zip,_darcs/*
+
 set wildignore+=*/coverage/*,*/.bundle/*
 set wildignore+=vendor/cache/*
 set wildignore+=cabal-src/*,.hsenv/*
 set wildignore+=target/*,project/target/*,*/target/scala-*,*/target/*$global*
 set wildignore+=*/.git/*
-set wildignore+=*/.*
 
 set tags+=gems.tags,cabal.tags
 set iskeyword=a-z,A-Z,_,.,39 " For hothasktags, tags can be qualified
 
-set synmaxcol=350 " Prevents vim getting really sluggish if there are long lines of data
+set synmaxcol=400 " Prevents vim getting really sluggish if there are long lines of data
 
 set statusline=%<%f\ (%{&ft})\ %-4(%m%)%=%-19(%3l,%02c%03V%)
 
@@ -62,6 +64,8 @@ set visualbell
 set ttyfast
 set laststatus=2
 
+set completeopt=longest,menuone
+
 let mapleader = ","
 
 runtime macros/matchit.vim
@@ -71,25 +75,28 @@ filetype off
 set rtp+=~/.vim/bundle/vundle
 call vundle#rc()
 
+Bundle "gmarik/vundle"
+
 " The Bundles
 
-Bundle "terryma/vim-multiple-cursors"
-
 " CORE
-Bundle "gmarik/vundle"
+Bundle "terryma/vim-multiple-cursors"
 Bundle "scrooloose/syntastic"
 let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['scala'] }
+let g:syntastic_haskell_checkers = ['hdevtools']
 Bundle "nkpart/command-t"
 Bundle "mileszs/ack.vim" 
 let g:ackprg = 'ag --nogroup --nocolor --column'
 Bundle "repeat.vim"
 Bundle "surround.vim"
 Bundle "tComment"
+let g:neocomplcache_enable_at_startup = 1
 Bundle "Shougo/neocomplcache"
 Bundle "vim-scripts/Rename"
 Bundle "tpope/vim-tbone"
 Bundle "tpope/vim-dispatch"
 Bundle "tpope/vim-fugitive"
+Bundle "tpope/vim-abolish"
 
 " Languages
 Bundle "vim-ruby/vim-ruby" 
@@ -109,6 +116,7 @@ Bundle "kchmck/vim-coffee-script"
 Bundle "Markdown"
 Bundle "dag/vim2hs"
 Bundle "bitc/vim-hdevtools"
+
 au FileType haskell nnoremap <buffer> <F1> :call Wat()<cr>
 function! Wat()
   :redir @*
@@ -124,11 +132,8 @@ Bundle "pbrisbin/html-template-syntax"
 Bundle "ujihisa/neco-ghc"
 
 " Visual / UI / Colors
-Bundle "tomasr/molokai"
-Bundle "nanotech/jellybeans.vim"
 Bundle "ColorV"
 Bundle "chriskempson/base16-vim"
-Bundle 'flazz/vim-colorschemes'
 
 " Text objects
 Bundle "kana/vim-textobj-user"
@@ -141,9 +146,8 @@ filetype plugin indent on
 " VISUAL SETTINGS
 set fillchars=vert:\ 
 " set background=dark
-" colorscheme base16-default
-set background=light
-colorscheme summerfruit256
+set background=dark
+colorscheme base16-default
 
 highlight clear SignColumn
 " AUTOBOTS ASSEMBLE
