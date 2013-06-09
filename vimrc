@@ -158,7 +158,6 @@ au BufRead,BufNewFile *.coffee set filetype=coffee
 au BufRead,BufNewFile {COMMIT_EDITMSG} set ft=gitcommit
 au BufRead,BufNewFile {gitconfig,.gitconfig} set ft=gitconfig
 au BufRead,BufNewFile *.hs set path+=templates,src | set suffixesadd+=.hamlet | setlocal omnifunc=necoghc#omnifunc | normal zR
-au BufRead,BufNewFile *.hs set path+=templates,src | set suffixesadd+=.hamlet | setlocal omnifunc=necoghc#omnifunc | normal zR
 au BufRead,BufNewFile {*.h,*.m} set tabstop=4 | set shiftwidth=4 | set softtabstop=4 | set noexpandtab
 
 au BufNewFile *.hs call InsertHsModule()
@@ -190,7 +189,6 @@ nnoremap <Space> :wa<cr>
 
 " Command Ts
 runtime finders.vim
-" nnoremap <leader>gf :call CommandTShowMyFileFinder('*')<cr>
 nnoremap <leader>gf :call CommandTShowMyFileFinder2()<cr>
 nnoremap <leader>gh :call CommandTShowHoogleFinder()<cr>
 nnoremap <leader>gg :call CommandTShowGemfileFinder()<cr>
@@ -200,6 +198,7 @@ nnoremap <leader>gm :call GitStatusFinder()<cr>
 nnoremap <leader>gM :call CommandTListChanges()<cr>
 nnoremap <leader>ga :call AckLol()<cr>
 nnoremap <leader>gw :call Widget()<cr>
+
 " For yesod apps
 function! Widget()
   let dir = expand('%:h')
@@ -211,18 +210,14 @@ function! Widget()
   call CommandTShowMyFileFinder('templates/' . base . '.*')
 endfunction
 
-nnoremap \\ :GitGutterNextHunk<cr>
-" nnoremap || :GitGutterPrevHunk<cr>
-
 nnoremap <leader>/ :GhcModTypeClear<cr>
-" nnoremap <leader>. :GhcModType<cr>
+nnoremap <leader>. :GhcModType<cr>
 nnoremap <leader>T :GhcModTypeInsert<cr>
 nnoremap <leader>c :wa<cr>:GhcModCheckAsync<cr>
 nnoremap <leader>e :Errors<cr>
 
 nnoremap <leader>ms :call MapSpecFile()<cr>
 func! MapSpecFile()
-  let command = "any_test " . expand("%")
   exe 'map <leader>t :wa\|!any_test ' . expand("%") . '<cr>'
 endfunc
 
