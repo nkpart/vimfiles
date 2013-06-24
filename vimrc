@@ -90,24 +90,49 @@ let g:ackprg = 'ag --nogroup --nocolor --column'
 Bundle "repeat.vim"
 Bundle "surround.vim"
 Bundle "tComment"
+
+let g:acp_enableAtStartup = 0
 let g:neocomplcache_enable_at_startup = 1
+let g:neocomplcache_enable_smart_case = 1
+let g:neocomplcache_min_syntax_length = 0
+let g:neocomplcache_lock_buffer_name_pattern = "" "'\*ku\*'
+if !exists('g:neocomplcache_keyword_patterns')
+    let g:neocomplcache_keyword_patterns = {}
+endif
+let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
+inoremap <expr><C-l>     neocomplcache#complete_common_string()
+
+" Recommended key-mappings.
+" <CR>: close popup and save indent.
+inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+function! s:my_cr_function()
+  return neocomplcache#smart_close_popup() . "\<CR>"
+  " For no inserting <CR> key.
+  "return pumvisible() ? neocomplcache#close_popup() : "\<CR>"
+endfunction
+" <TAB>: completion.
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 Bundle "Shougo/neocomplcache"
 Bundle "vim-scripts/Rename"
 Bundle "tpope/vim-tbone"
 Bundle "tpope/vim-dispatch"
 Bundle "tpope/vim-fugitive"
 Bundle "tpope/vim-abolish"
+Bundle "Shougo/vimproc" 
+Bundle "Shougo/unite.vim"
 
 " Languages
 Bundle "vim-ruby/vim-ruby" 
 Bundle "derekwyatt/vim-scala"
+Bundle "othree/html5.vim"
+Bundle "gre/play2vim"
 
-Bundle "megaannum/self"
-Bundle "megaannum/forms" 
-Bundle "Shougo/vimproc"
-Bundle "Shougo/vimshell"
-Bundle "aemoncannon/ensime"
-Bundle "megaannum/vimside"    
+" Bundle "megaannum/self"
+" Bundle "megaannum/forms" 
+" Bundle "Shougo/vimproc"
+" Bundle "Shougo/vimshell"
+" Bundle "aemoncannon/ensime"
+" Bundle "megaannum/vimside"    
 
   " Toggles ruby blocks
 Bundle "jgdavey/vim-blockle"
@@ -145,9 +170,11 @@ filetype plugin indent on
 
 " VISUAL SETTINGS
 set fillchars=vert:\ 
-" set background=dark
+" set background=light
 set background=dark
+"
 colorscheme base16-default
+hi Keyword cterm=bold
 
 highlight clear SignColumn
 " AUTOBOTS ASSEMBLE
@@ -189,8 +216,7 @@ nnoremap <Space> :wa<cr>
 
 " Command Ts
 runtime finders.vim
-nnoremap <leader>gf :call CommandTShowMyFileFinder2()<cr>
-nnoremap <leader>gh :call CommandTShowHoogleFinder()<cr>
+" nnoremap <leader>gf :call CommandTShowMyFileFinder2()<cr>
 nnoremap <leader>gg :call CommandTShowGemfileFinder()<cr>
 nnoremap <leader>gt :call CommandTShowMyTagFinder()<cr>
 nnoremap <leader>gS :call ShowSchemaFinder()<cr>
@@ -198,6 +224,27 @@ nnoremap <leader>gm :call GitStatusFinder()<cr>
 nnoremap <leader>gM :call CommandTListChanges()<cr>
 nnoremap <leader>ga :call AckLol()<cr>
 nnoremap <leader>gw :call Widget()<cr>
+
+" THE UNITE CONFIG
+call unite#filters#matcher_default#use(['matcher_fuzzy'])
+" See unite-filter-sorter_rank, but this is basically how command-t works.
+" Any file sources should go in this list
+call unite#custom#source('buffer,file,file_mru,file_rec,file_rec/async', 'sorters', ['sorter_rank', 'sorter_length'])
+let g:unite_source_file_rec_min_cache_files=0
+
+autocmd FileType unite call s:unite_my_settings()
+function! s:unite_my_settings()"{{{
+  map <buffer> <ESC>      <Plug>(unite_exit)
+  map <buffer> <C-c>      <Plug>(unite_exit)
+  imap <buffer> <ESC>      <Plug>(unite_exit)
+  imap <buffer> <C-c>      <Plug>(unite_exit)
+  imap <buffer> <C-j>     <Plug>(unite_select_next_line)
+  imap <buffer> <C-k>     <Plug>(unite_select_previous_line)
+endfunction"}}}
+
+nnoremap <leader>gf :Unite -start-insert file_rec/async<cr>
+nnoremap <leader>gh :Unite -start-insert hoogle<cr>
+
 
 " For yesod apps
 function! Widget()
