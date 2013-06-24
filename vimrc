@@ -216,13 +216,11 @@ nnoremap <Space> :wa<cr>
 
 " Command Ts
 runtime finders.vim
-" nnoremap <leader>gf :call CommandTShowMyFileFinder2()<cr>
 nnoremap <leader>gg :call CommandTShowGemfileFinder()<cr>
 nnoremap <leader>gt :call CommandTShowMyTagFinder()<cr>
 nnoremap <leader>gS :call ShowSchemaFinder()<cr>
 nnoremap <leader>gm :call GitStatusFinder()<cr>
 nnoremap <leader>gM :call CommandTListChanges()<cr>
-nnoremap <leader>ga :call AckLol()<cr>
 nnoremap <leader>gw :call Widget()<cr>
 
 " THE UNITE CONFIG
@@ -230,6 +228,7 @@ call unite#filters#matcher_default#use(['matcher_fuzzy'])
 " See unite-filter-sorter_rank, but this is basically how command-t works.
 " Any file sources should go in this list
 call unite#custom#source('buffer,file,file_mru,file_rec,file_rec/async', 'sorters', ['sorter_rank', 'sorter_length'])
+" Screw caching. Get faster hardware.
 let g:unite_source_file_rec_min_cache_files=0
 
 autocmd FileType unite call s:unite_my_settings()
@@ -244,7 +243,7 @@ endfunction"}}}
 
 nnoremap <leader>gf :Unite -start-insert file_rec/async<cr>
 nnoremap <leader>gh :Unite -start-insert hoogle<cr>
-
+nnoremap <leader>ga :Unite -start-insert ag<cr>
 
 " For yesod apps
 function! Widget()
