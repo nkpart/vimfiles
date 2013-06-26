@@ -3,21 +3,6 @@ $LOAD_PATH << File.expand_path("~/.vim/ruby")
 require "command-t-finders"
 RUBY
 
-function! AckLol()
-ruby << RUBY
-Finder.present do
-  run_command(15, 5) { |str|
-    cleaned = str.gsub(/\s+/, ".*")
-    %`ag --nogroup "#{cleaned}"`
-  }
-  vim_handler { |sel|
-    _, line, num = *sel.match(/(.*):(\d+).*/)
-    ":e +#{num} #{line}"
-  }
-end
-RUBY
-endfunction
-
 function! CommandTChanges()
   let shaname = input("SHA: ", "HEAD")
   CommitChanges(shaname)
@@ -45,30 +30,6 @@ ruby << RUBY
 RUBY
 endfunction
 
-function! CommandTShowMyFileFinder2()
-ruby << RUBY
-  wildignore = ::VIM::evaluate('&wildignore').split(",").map { |v| "--ignore \"#{v}\"" }.join(" ")
-  files = `ag -g \".*\" #{wildignore}`.split("\n").map { |line| line.sub(/^\.\//, "") }
-  Finder.present do
-    match_list(files, 30, 0)
-    open_selection_
-  end
-RUBY
-nmap <buffer> @ <cr>/
-endfunction
-
-function! GitStatusFinder()
-ruby << RUBY
-  files = `git status -s --porcelain`.chomp.split("\n")
-  Finder.present do
-    match_list(files)
-    vim_handler { |sel|
-      "silent! :e #{sel[/.*\s+(.*)/, 1]}"
-    }
-  end
-RUBY
-endfunction
-
 function! CommandTShowGemfileFinder()
 ruby << RUBY
   pwd = ::VIM::evaluate 'getcwd()'
@@ -84,18 +45,6 @@ ruby << RUBY
       "Sexplore #{dir} | lcd #{dir}"
     }
   end
-RUBY
-endfunction
-
-function! CommandTShowHoogleFinder()
-ruby << RUBY
-Finder.present do
-  run_command { |str|
-    _,modules,_,str = *str.match(/((\+[a-z,\-]+\s)*)(.*)/)
-    %`hoogle #{modules} -n 10 "#{str}"` 
-  }
-  copy_selection
-end
 RUBY
 endfunction
 

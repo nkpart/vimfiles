@@ -219,9 +219,7 @@ runtime finders.vim
 nnoremap <leader>gg :call CommandTShowGemfileFinder()<cr>
 nnoremap <leader>gt :call CommandTShowMyTagFinder()<cr>
 nnoremap <leader>gS :call ShowSchemaFinder()<cr>
-nnoremap <leader>gm :call GitStatusFinder()<cr>
 nnoremap <leader>gM :call CommandTListChanges()<cr>
-nnoremap <leader>gw :call Widget()<cr>
 
 " THE UNITE CONFIG
 call unite#filters#matcher_default#use(['matcher_fuzzy'])
@@ -231,30 +229,21 @@ call unite#custom#source('buffer,file,file_mru,file_rec,file_rec/async', 'sorter
 " Screw caching. Get faster hardware.
 let g:unite_source_file_rec_min_cache_files=0
 
+let g:unite_enable_start_insert = 1
 autocmd FileType unite call s:unite_my_settings()
-function! s:unite_my_settings()"{{{
+function! s:unite_my_settings()
   map <buffer> <ESC>      <Plug>(unite_exit)
   map <buffer> <C-c>      <Plug>(unite_exit)
   imap <buffer> <ESC>      <Plug>(unite_exit)
   imap <buffer> <C-c>      <Plug>(unite_exit)
   imap <buffer> <C-j>     <Plug>(unite_select_next_line)
   imap <buffer> <C-k>     <Plug>(unite_select_previous_line)
-endfunction"}}}
-
-nnoremap <leader>gf :Unite -start-insert file_rec/async<cr>
-nnoremap <leader>gh :Unite -start-insert hoogle<cr>
-nnoremap <leader>ga :Unite -start-insert ag<cr>
-
-" For yesod apps
-function! Widget()
-  let dir = expand('%:h')
-  if dir == "templates"
-    let base = expand('%:t:r')
-  else
-    let base = expand('<cword>')
-  endif
-  call CommandTShowMyFileFinder('templates/' . base . '.*')
 endfunction
+
+nnoremap <leader>gf :Unite file_rec/async<cr>
+nnoremap <leader>gh :Unite hoogle<cr>
+nnoremap <leader>ga :Unite ag<cr>
+nnoremap <leader>gm :Unite git_status<cr>
 
 nnoremap <leader>/ :GhcModTypeClear<cr>
 nnoremap <leader>. :GhcModType<cr>

@@ -11,21 +11,17 @@ let s:source = {
       \ 'default_kind' : 'file',
       \ 'default_action' : 'picked',
       \ 'action_table' : {},
+      \ 'required_pattern_length' : 2,
       \ }
 
 let s:source.action_table.picked = { 'is_quit' : 1 }
 function! s:source.action_table.picked.func(candidates)
 endfunction
 
-function! s:source.gather_candidates(args, context) 
-  return []
-endfunction
+call extend(s:source, unite_util#EmptyGather())
 
 function! s:source.change_candidates(args, context)
   let input = get(a:context, "input")
-  if (strlen(input) < 2)
-    return []
-  endif
   " TODO Allow refining of packages:
     " _,modules,_,str = *str.match(/((\+[a-z,\-]+\s)*)(.*)/)
     " %`hoogle #{modules} -n 10 "#{str}"` 
