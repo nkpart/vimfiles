@@ -31,7 +31,7 @@ function! s:source.change_candidates(args, context)
         \ 'word' : v:val
         \ }")
   return results
-endfunction"}}}
+endfunction
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

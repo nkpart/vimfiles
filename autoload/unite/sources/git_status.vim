@@ -25,7 +25,7 @@ function! s:source.gather_candidates(args, context)
           \ } )
   endfor
   return candidates
-endfunction"}}}
+endfunction
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
