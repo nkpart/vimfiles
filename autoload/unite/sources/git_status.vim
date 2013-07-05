@@ -7,7 +7,6 @@ endfunction
 
 let s:source = {
       \ 'name' : 'git_status',
-      \ 'description' : 'ag as you type',
       \ 'default_kind' : 'file',
       \ }
 

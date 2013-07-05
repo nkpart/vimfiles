@@ -21,15 +21,7 @@ function! s:source.change_candidates(args, context)
   "Source: https://github.com/t9md/vim-unite-ack/blob/master/autoload/unite/sources/ack.vim#L54
   let candidates = []
   for line in lines
-    let [fname, lineno, text] = matchlist(line,'\v(.{-}):(\d+):(.*)$')[1:3]
-    call add(candidates, {
-          \ "word": fname . ":" . lineno . ":" . text,
-          \ "source": "ag",
-          \ "kind": "jump_list",
-          \ "action__path": fname,
-          \ "action__line": lineno,
-          \ "action__text": text,
-          \ } )
+    call add(candidates, unite_util#AgLineParser(line))
   endfor
   return candidates
 endfunction

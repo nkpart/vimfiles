@@ -1,8 +1,5 @@
 " Used by command-t to filter its list. TODO make ack use the same?
-"
-"
 set wildignore+=*.jar,*.o,*.hi,*.obj,*.class,dist/**,build/**,*.png,*~,static/tmp/*,tmp/*,**/*.build/**,cabal-dev/*,*.gz,*.p12,*.zip,_darcs/*
-
 set wildignore+=*/coverage/*,*/.bundle/*
 set wildignore+=vendor/cache/*
 set wildignore+=cabal-src/*,.hsenv/*
@@ -25,9 +22,9 @@ set clipboard+=unnamed " yank goes to clipboard
 set noswapfile
 set nowritebackup
 set number
-set numberwidth=5
-set winwidth=79
+" set winwidth=79
 set hidden " prevents losing undo history after save
+set nofoldenable
 
 " Search
 set ignorecase 
@@ -83,7 +80,6 @@ Bundle "gmarik/vundle"
 Bundle "terryma/vim-multiple-cursors"
 Bundle "scrooloose/syntastic"
 let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['scala'] }
-let g:syntastic_haskell_checkers = ['hdevtools']
 Bundle "nkpart/command-t"
 Bundle "mileszs/ack.vim" 
 let g:ackprg = 'ag --nogroup --nocolor --column'
@@ -114,7 +110,6 @@ endfunction
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 Bundle "Shougo/neocomplcache"
 Bundle "vim-scripts/Rename"
-Bundle "tpope/vim-tbone"
 Bundle "tpope/vim-dispatch"
 Bundle "tpope/vim-fugitive"
 Bundle "tpope/vim-abolish"
@@ -127,36 +122,20 @@ Bundle "derekwyatt/vim-scala"
 Bundle "othree/html5.vim"
 Bundle "gre/play2vim"
 
-" Bundle "megaannum/self"
-" Bundle "megaannum/forms" 
-" Bundle "Shougo/vimproc"
-" Bundle "Shougo/vimshell"
-" Bundle "aemoncannon/ensime"
-" Bundle "megaannum/vimside"    
-
   " Toggles ruby blocks
 Bundle "jgdavey/vim-blockle"
 Bundle "tpope/vim-rails"
 Bundle "kchmck/vim-coffee-script"
 Bundle "Markdown"
 Bundle "dag/vim2hs"
-Bundle "bitc/vim-hdevtools"
-
-au FileType haskell nnoremap <buffer> <F1> :call Wat()<cr>
-function! Wat()
-  :redir @*
-  :HdevtoolsType
-  :redir END
-endfunction
-au FileType haskell nnoremap <buffer> <silent> <F2> :HdevtoolsClear<CR>
-  " dependency for ghcmod-vim
-" Bundle "Shougo/vimproc" 
-" Bundle "eagletmt/ghcmod-vim"
+" 
+Bundle "Shougo/vimproc" 
+Bundle "eagletmt/ghcmod-vim"
 let g:haskell_conceal_enumerations = 0
 Bundle "pbrisbin/html-template-syntax"
 Bundle "ujihisa/neco-ghc"
-
-" Visual / UI / Colors
+" 
+" " Visual / UI / Colors
 Bundle "ColorV"
 Bundle "chriskempson/base16-vim"
 
@@ -184,7 +163,7 @@ au BufRead,BufNewFile {*.md,*.markdown} set ft=markdown
 au BufRead,BufNewFile *.coffee set filetype=coffee
 au BufRead,BufNewFile {COMMIT_EDITMSG} set ft=gitcommit
 au BufRead,BufNewFile {gitconfig,.gitconfig} set ft=gitconfig
-au BufRead,BufNewFile *.hs set path+=templates,src | set suffixesadd+=.hamlet | setlocal omnifunc=necoghc#omnifunc | normal zR
+au BufRead,BufNewFile *.hs set path+=templates,src | set suffixesadd+=.hamlet | setlocal omnifunc=necoghc#omnifunc
 au BufRead,BufNewFile {*.h,*.m} set tabstop=4 | set shiftwidth=4 | set softtabstop=4 | set noexpandtab
 
 au BufNewFile *.hs call InsertHsModule()
@@ -206,11 +185,9 @@ inoremap jk <esc>
 nnoremap <leader><leader> <C-^>
 nnoremap <leader>aa :Ack<space>
 nnoremap <leader>s <C-w>v<C-w>w:A<cr> " Split with alternate
-nnoremap <leader>G :!git<space> 
 nnoremap <C-j> :cn<cr>
 nnoremap <C-k> :cp<cr> 
 nnoremap <cr> :noh<cr>
-nnoremap <leader>d :silent !git diff %<cr><C-l>
 vnoremap S y:exec "silent !git log -p -S\"" . @" . "\""<cr>:redraw!<cr>
 nnoremap <Space> :wa<cr>
 
@@ -225,8 +202,9 @@ nnoremap <leader>gM :call CommandTListChanges()<cr>
 call unite#filters#matcher_default#use(['matcher_fuzzy'])
 " See unite-filter-sorter_rank, but this is basically how command-t works.
 " Any file sources should go in this list
-call unite#custom#source('buffer,file,file_mru,file_rec,file_rec/async', 'sorters', ['sorter_rank', 'sorter_length'])
+call unite#custom#source('buffer,file,file_mru,file_rec,file_rec/async', 'sorters', 'sorter_rank')
 " Screw caching. Get faster hardware.
+" This doesn't work as well as I'd hoped.
 let g:unite_source_file_rec_min_cache_files=0
 
 let g:unite_enable_start_insert = 1
@@ -245,11 +223,12 @@ nnoremap <leader>gh :Unite hoogle<cr>
 nnoremap <leader>ga :Unite ag<cr>
 nnoremap <leader>gm :Unite git_status<cr>
 
+nnoremap <leader>ge :cfile \| Unite quickfix<cr>
+
 nnoremap <leader>/ :GhcModTypeClear<cr>
 nnoremap <leader>. :GhcModType<cr>
 nnoremap <leader>T :GhcModTypeInsert<cr>
 nnoremap <leader>c :wa<cr>:GhcModCheckAsync<cr>
-nnoremap <leader>e :Errors<cr>
 
 nnoremap <leader>ms :call MapSpecFile()<cr>
 func! MapSpecFile()
