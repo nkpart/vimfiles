@@ -17,3 +17,12 @@ function! unite_util#AgLineParser(line)
           \ "action__text": text,
           \ }
 endfunction
+
+function! unite_util#UniteFile(filePath)
+    return {
+          \ "word": a:filePath,
+          \ "source": "ag_files",
+          \ "kind": "jump_list",
+          \ "action__path": a:filePath,
+          \ }
+endfunction

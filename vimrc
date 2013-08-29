@@ -11,7 +11,7 @@ set iskeyword=a-z,A-Z,_,.,39 " For hothasktags, tags can be qualified
 
 set synmaxcol=400 " Prevents vim getting really sluggish if there are long lines of data
 
-set statusline=%<%f\ (%{&ft})\ %-4(%m%)%=%-19(%3l,%02c%03V%)
+set statusline=%<%f\ (%{&ft})
 
 set history=1000
 set mouse=a
@@ -22,7 +22,6 @@ set clipboard+=unnamed " yank goes to clipboard
 set noswapfile
 set nowritebackup
 set number
-" set winwidth=79
 set hidden " prevents losing undo history after save
 set nofoldenable
 
@@ -50,6 +49,7 @@ set expandtab
 set smarttab
 set autoindent
 
+" Change cursor in iTerm on insert
 let &t_SI = "\<Esc>]50;CursorShape=1\x7"
 let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 
@@ -81,8 +81,7 @@ Bundle "terryma/vim-multiple-cursors"
 Bundle "scrooloose/syntastic"
 let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['scala'] }
 Bundle "nkpart/command-t"
-Bundle "mileszs/ack.vim" 
-let g:ackprg = 'ag --nogroup --nocolor --column'
+Bundle "rking/ag.vim"
 Bundle "repeat.vim"
 Bundle "surround.vim"
 Bundle "tComment"
@@ -108,6 +107,7 @@ function! s:my_cr_function()
 endfunction
 " <TAB>: completion.
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+
 Bundle "Shougo/neocomplcache"
 Bundle "vim-scripts/Rename"
 Bundle "tpope/vim-dispatch"
@@ -119,17 +119,20 @@ Bundle "Shougo/unite.vim"
 " Languages
 Bundle "vim-ruby/vim-ruby" 
 Bundle "derekwyatt/vim-scala"
-Bundle "othree/html5.vim"
 Bundle "gre/play2vim"
+" Bundle "Rip-Rip/clang_complete"
+" Bundle "eraserhd/vim-ios"
+" Bundle "msanders/cocoa.vim"
+Bundle "othree/html5.vim"
 
   " Toggles ruby blocks
 Bundle "jgdavey/vim-blockle"
 Bundle "tpope/vim-rails"
-Bundle "kchmck/vim-coffee-script"
+
 Bundle "Markdown"
+
 Bundle "dag/vim2hs"
 " 
-Bundle "Shougo/vimproc" 
 Bundle "eagletmt/ghcmod-vim"
 let g:haskell_conceal_enumerations = 0
 Bundle "pbrisbin/html-template-syntax"
@@ -149,10 +152,17 @@ filetype plugin indent on
 
 " VISUAL SETTINGS
 set fillchars=vert:\ 
-" set background=light
 set background=dark
+" set background=dark
 "
-colorscheme base16-default
+if has('gui_running')
+  colorscheme base16-monokai
+  set guioptions=-ace
+  set guifont=Source\ Code\ Pro\ Light:h13
+  set linespace=2
+else
+  colorscheme base16-default
+endif
 hi Keyword cterm=bold
 
 highlight clear SignColumn
@@ -160,11 +170,10 @@ highlight clear SignColumn
 au BufLeave,FocusLost * silent! wall " Write all files whenever
 au BufRead,BufNewFile {Gemfile,Rakefile,Capfile,*.rake,config.ru} set ft=ruby
 au BufRead,BufNewFile {*.md,*.markdown} set ft=markdown
-au BufRead,BufNewFile *.coffee set filetype=coffee
 au BufRead,BufNewFile {COMMIT_EDITMSG} set ft=gitcommit
 au BufRead,BufNewFile {gitconfig,.gitconfig} set ft=gitconfig
 au BufRead,BufNewFile *.hs set path+=templates,src | set suffixesadd+=.hamlet | setlocal omnifunc=necoghc#omnifunc
-au BufRead,BufNewFile {*.h,*.m} set tabstop=4 | set shiftwidth=4 | set softtabstop=4 | set noexpandtab
+au BufRead,BufNewFile {*.h,*.m} setlocal tabstop=4 | setlocal shiftwidth=4 | setlocal softtabstop=4 | setlocal noexpandtab
 
 au BufNewFile *.hs call InsertHsModule()
 function! InsertHsModule()
@@ -183,7 +192,7 @@ augroup END
 " MAPS AND WHATNOT
 inoremap jk <esc>
 nnoremap <leader><leader> <C-^>
-nnoremap <leader>aa :Ack<space>
+nnoremap <leader>aa :Ag<space>
 nnoremap <leader>s <C-w>v<C-w>w:A<cr> " Split with alternate
 nnoremap <C-j> :cn<cr>
 nnoremap <C-k> :cp<cr> 
@@ -223,12 +232,14 @@ nnoremap <leader>gh :Unite hoogle<cr>
 nnoremap <leader>ga :Unite ag<cr>
 nnoremap <leader>gm :Unite git_status<cr>
 
-nnoremap <leader>ge :cfile \| Unite quickfix<cr>
+nnoremap <leader>ge :Unite quickfix<cr>
 
 nnoremap <leader>/ :GhcModTypeClear<cr>
 nnoremap <leader>. :GhcModType<cr>
 nnoremap <leader>T :GhcModTypeInsert<cr>
 nnoremap <leader>c :wa<cr>:GhcModCheckAsync<cr>
+
+nnoremap <leader>e :cfile ./target/streams/compile/compile/\$global/out<cr>
 
 nnoremap <leader>ms :call MapSpecFile()<cr>
 func! MapSpecFile()
