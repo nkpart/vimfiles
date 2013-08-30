@@ -227,7 +227,7 @@ function! s:unite_my_settings()
   imap <buffer> <C-k>     <Plug>(unite_select_previous_line)
 endfunction
 
-nnoremap <leader>gf :Unite file_rec/async<cr>
+nnoremap <leader>gf :Unite ag_files<cr>
 nnoremap <leader>gh :Unite hoogle<cr>
 nnoremap <leader>ga :Unite ag<cr>
 nnoremap <leader>gm :Unite git_status<cr>
