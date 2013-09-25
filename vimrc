@@ -91,6 +91,7 @@ let g:neocomplcache_enable_at_startup = 1
 let g:neocomplcache_enable_smart_case = 1
 let g:neocomplcache_min_syntax_length = 0
 let g:neocomplcache_lock_buffer_name_pattern = "" "'\*ku\*'
+let g:necoghc_enable_detailed_browse = 1
 if !exists('g:neocomplcache_keyword_patterns')
     let g:neocomplcache_keyword_patterns = {}
 endif
@@ -120,10 +121,8 @@ Bundle "Shougo/unite.vim"
 Bundle "vim-ruby/vim-ruby" 
 Bundle "derekwyatt/vim-scala"
 Bundle "gre/play2vim"
-" Bundle "Rip-Rip/clang_complete"
-" Bundle "eraserhd/vim-ios"
-" Bundle "msanders/cocoa.vim"
 Bundle "othree/html5.vim"
+Bundle "kongo2002/fsharp-vim"
 
   " Toggles ruby blocks
 Bundle "jgdavey/vim-blockle"
@@ -141,6 +140,7 @@ Bundle "ujihisa/neco-ghc"
 " " Visual / UI / Colors
 Bundle "ColorV"
 Bundle "chriskempson/base16-vim"
+Bundle "bling/vim-airline"
 
 " Text objects
 Bundle "kana/vim-textobj-user"
@@ -208,15 +208,15 @@ nnoremap <leader>gS :call ShowSchemaFinder()<cr>
 nnoremap <leader>gM :call CommandTListChanges()<cr>
 
 " THE UNITE CONFIG
-call unite#filters#matcher_default#use(['matcher_fuzzy'])
+call unite#filters#matcher_default#use(['matcher_matcher'])
 " See unite-filter-sorter_rank, but this is basically how command-t works.
 " Any file sources should go in this list
-call unite#custom#source('buffer,file,file_mru,file_rec,file_rec/async', 'sorters', 'sorter_rank')
+call unite#custom#source('buffer,ag,ag_files,file,file_mru,file_rec,file_rec/async', 'sorters', ['sorter_nothing'])
 " Screw caching. Get faster hardware.
 " This doesn't work as well as I'd hoped.
 let g:unite_source_file_rec_min_cache_files=0
-
 let g:unite_enable_start_insert = 1
+
 autocmd FileType unite call s:unite_my_settings()
 function! s:unite_my_settings()
   map <buffer> <ESC>      <Plug>(unite_exit)
@@ -249,3 +249,18 @@ endfunc
 map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
   \ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
   \ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
+
+au BufRead,BufNewFile *.fs set errorformat=
+	\%*[^\"]\"%f\"%*\\D%l:\ %m,
+	\\"%f\"%*\\D%l:\ %m,
+	\%f(%l\\,%c):\ %trror\ CS%\\d%\\+:\ %m,
+	\%f(%l\\,%c):\ %tarning\ CS%\\d%\\+:\ %m,
+	\%f(%l\\,%c):\ %trror\ FS%\\d%\\+:\ %m,
+	\%f(%l\\,%c):\ %tarning\ FS%\\d%\\+:\ %m,
+	\%f:%l:\ %m,
+	\\"%f\"\\,\ line\ %l%*\\D%c%*[^\ ]\ %m,
+	\%D%*\\a[%*\\d]:\ Entering\ directory\ `%f',
+	\%X%*\\a[%*\\d]:\ Leaving\ directory\ `%f',
+	\%DMaking\ %*\\a\ in\ %f,
+	\%-G%.%#Compilation%.%#,
+	\%-G%.%#
