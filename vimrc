@@ -206,33 +206,8 @@ nnoremap <leader>gt :call CommandTShowMyTagFinder()<cr>
 nnoremap <leader>gS :call ShowSchemaFinder()<cr>
 nnoremap <leader>gM :call CommandTListChanges()<cr>
 
-" Run a given vim command on the results of fuzzy selecting from a given shell
-" command. See usage below.
-function! SelectaCommand(choice_command, vim_command)
-  call TidilyExec(a:vim_command . " " . system(a:choice_command . " | selecta"))
-endfunction
+runtime selecta.vim
 
-function! SelectaCommand2(input, vim_command)
-  call TidilyExec(a:vim_command . " " . system("selecta", join(a:input, "\n")))
-endfunction
-
-function! ProducaCommand(choice_command, vim_command)
-  let x = system("produca " . a:choice_command)
-  call TidilyExec(a:vim_command . " " . x)
-endfunction
-
-function! TidilyExec(vim_command)
-  try
-    silent! exec a:vim_command
-  catch /Vim:Interrupt/
-    " Swallow the ^C so that the redraw below happens; otherwise there will be
-    " leftovers from selecta on the screen
-  endtry
-  redraw!
-endfunction
-
-" Find all files in all non-dot directories starting in the working directory.
-" Fuzzy select one of those. Open the selected file with :e.
 nnoremap <leader>gf :call SelectaCommand("ag -g .", ":e")<cr>
 nnoremap <leader>gh :call ProducaCommand('xargs -I {} hoogle -n 10 "{}"', ":echom")<cr>
 nnoremap <leader>ga :call ProducaCommand('xargs -I {} ag --nocolor --nogroup --search-files "{}" .', ":EditJump")<cr>
@@ -243,8 +218,7 @@ nnoremap <leader>ge :call SelectaCommand2(getqflist(), ":e")<cr>
 function! EditJump(...)
   let jumpLine = join(a:000, " ")
   let [fname, lineno, text] = matchlist(jumpLine,'\v(.{-}):(\d+):(.*)$')[1:3]
-  exec ":e " . fname
-  exec ":" . lineno
+  exec ":e +" . lineno . " " . fname
 endfunction
 
 command! -nargs=* EditJump :call EditJump(<f-args>)
