@@ -7,7 +7,7 @@ set wildignore+=target/*,project/target/*,*/target/scala-*,*/target/*$global*
 set wildignore+=*/.git/*
 
 set tags+=gems.tags,cabal.tags
-set iskeyword=a-z,A-Z,_,.,39 " For hothasktags, tags can be qualified
+" set iskeyword=a-z,A-Z,_,.,39 " For hothasktags, tags can be qualified
 
 set synmaxcol=400 " Prevents vim getting really sluggish if there are long lines of data
 
@@ -114,8 +114,6 @@ Bundle "vim-scripts/Rename"
 Bundle "tpope/vim-dispatch"
 Bundle "tpope/vim-fugitive"
 Bundle "tpope/vim-abolish"
-Bundle "Shougo/vimproc" 
-Bundle "Shougo/unite.vim"
 
 " Languages
 Bundle "vim-ruby/vim-ruby" 
@@ -132,6 +130,7 @@ Bundle "Markdown"
 
 Bundle "dag/vim2hs"
 " 
+Bundle "Shougo/vimproc" 
 Bundle "eagletmt/ghcmod-vim"
 let g:haskell_conceal_enumerations = 0
 Bundle "pbrisbin/html-template-syntax"
@@ -207,32 +206,48 @@ nnoremap <leader>gt :call CommandTShowMyTagFinder()<cr>
 nnoremap <leader>gS :call ShowSchemaFinder()<cr>
 nnoremap <leader>gM :call CommandTListChanges()<cr>
 
-" THE UNITE CONFIG
-call unite#filters#matcher_default#use(['matcher_matcher'])
-" See unite-filter-sorter_rank, but this is basically how command-t works.
-" Any file sources should go in this list
-call unite#custom#source('buffer,ag,ag_files,file,file_mru,file_rec,file_rec/async', 'sorters', ['sorter_nothing'])
-" Screw caching. Get faster hardware.
-" This doesn't work as well as I'd hoped.
-let g:unite_source_file_rec_min_cache_files=0
-let g:unite_enable_start_insert = 1
-
-autocmd FileType unite call s:unite_my_settings()
-function! s:unite_my_settings()
-  map <buffer> <ESC>      <Plug>(unite_exit)
-  map <buffer> <C-c>      <Plug>(unite_exit)
-  imap <buffer> <ESC>      <Plug>(unite_exit)
-  imap <buffer> <C-c>      <Plug>(unite_exit)
-  imap <buffer> <C-j>     <Plug>(unite_select_next_line)
-  imap <buffer> <C-k>     <Plug>(unite_select_previous_line)
+" Run a given vim command on the results of fuzzy selecting from a given shell
+" command. See usage below.
+function! SelectaCommand(choice_command, vim_command)
+  call TidilyExec(a:vim_command . " " . system(a:choice_command . " | selecta"))
 endfunction
 
-nnoremap <leader>gf :Unite ag_files<cr>
-nnoremap <leader>gh :Unite hoogle<cr>
-nnoremap <leader>ga :Unite ag<cr>
-nnoremap <leader>gm :Unite git_status<cr>
+function! SelectaCommand2(input, vim_command)
+  call TidilyExec(a:vim_command . " " . system("selecta", join(a:input, "\n")))
+endfunction
 
-nnoremap <leader>ge :Unite quickfix<cr>
+function! ProducaCommand(choice_command, vim_command)
+  let x = system("produca " . a:choice_command)
+  call TidilyExec(a:vim_command . " " . x)
+endfunction
+
+function! TidilyExec(vim_command)
+  try
+    silent! exec a:vim_command
+  catch /Vim:Interrupt/
+    " Swallow the ^C so that the redraw below happens; otherwise there will be
+    " leftovers from selecta on the screen
+  endtry
+  redraw!
+endfunction
+
+" Find all files in all non-dot directories starting in the working directory.
+" Fuzzy select one of those. Open the selected file with :e.
+nnoremap <leader>gf :call SelectaCommand("ag -g .", ":e")<cr>
+nnoremap <leader>gh :call ProducaCommand('xargs -I {} hoogle -n 10 "{}"', ":echom")<cr>
+nnoremap <leader>ga :call ProducaCommand('xargs -I {} ag --nocolor --nogroup --search-files "{}" .', ":EditJump")<cr>
+
+nnoremap <leader>gm :call SelectaCommand("git status -s --porcelain", ":e")<cr>
+nnoremap <leader>ge :call SelectaCommand2(getqflist(), ":e")<cr>
+
+function! EditJump(...)
+  let jumpLine = join(a:000, " ")
+  let [fname, lineno, text] = matchlist(jumpLine,'\v(.{-}):(\d+):(.*)$')[1:3]
+  exec ":e " . fname
+  exec ":" . lineno
+endfunction
+
+command! -nargs=* EditJump :call EditJump(<f-args>)
 
 nnoremap <leader>/ :GhcModTypeClear<cr>
 nnoremap <leader>. :GhcModType<cr>
