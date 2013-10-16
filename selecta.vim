@@ -1,23 +1,47 @@
-" Run a given vim command on the results of fuzzy selecting from a given shell
-" command. See usage below.
 function! SelectaCommand(choice_command, vim_command)
-  call TidilyExec(a:vim_command . " " . system(a:choice_command . " | selecta"))
+  try
+    silent! exec a:vim_command . " " . system(a:choice_command . " | selecta")
+  catch /Vim:Interrupt/
+  endtry
+  redraw!
+endfunction
+
+function! SelectaFunction(choice_command, vim_function)
+  try
+    let choice = system(a:choice_command . " | selecta")
+    let Fn = function(a:vim_function)
+    call Fn(choice)
+    " silent! exec a:vim_command . " " . 
+  catch /Vim:Interrupt/
+  endtry
+  redraw!
+endfunction
+
+function! BijectaFunction(choice_command, regex, vim_function)
+  try
+    let cmd = a:choice_command . ' | bijecta "' . a:regex . '" selecta'
+    echo cmd
+    let choice = system(cmd)
+    let Fn = function(a:vim_function)
+    call Fn(choice)
+    " silent! exec a:vim_command . " " . 
+  catch /Vim:Interrupt/
+  endtry
+  redraw!
 endfunction
 
 function! SelectaCommand2(input, vim_command)
-  call TidilyExec(a:vim_command . " " . system("selecta", join(a:input, "\n")))
+  try
+    silent! exec a:vim_command . " " . system("selecta", join(a:input, "\n"))
+  catch /Vim:Interrupt/
+  endtry
+  redraw!
 endfunction
 
 function! ProducaCommand(choice_command, vim_command)
-  call TidilyExec(a:vim_command . " " . system("produca " . a:choice_command))
-endfunction
-
-function! TidilyExec(vim_command)
   try
-    silent! exec a:vim_command
+    silent! exec a:vim_command . " " . system("produca " . a:choice_command)
   catch /Vim:Interrupt/
-    " Swallow the ^C so that the redraw below happens; otherwise there will be
-    " leftovers from selecta on the screen
   endtry
   redraw!
 endfunction

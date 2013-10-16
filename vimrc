@@ -201,13 +201,13 @@ nnoremap <Space> :wa<cr>
 
 " Command Ts
 runtime finders.vim
-nnoremap <leader>gg :call CommandTShowGemfileFinder()<cr>
-nnoremap <leader>gt :call CommandTShowMyTagFinder()<cr>
+
 nnoremap <leader>gS :call ShowSchemaFinder()<cr>
 nnoremap <leader>gM :call CommandTListChanges()<cr>
 
 runtime selecta.vim
 
+nnoremap <leader>gg :call GemfileSelecta()<cr>
 nnoremap <leader>gf :call SelectaCommand("ag -g .", ":e")<cr>
 nnoremap <leader>gh :call ProducaCommand('xargs -I {} hoogle -n 10 "{}"', ":echom")<cr>
 nnoremap <leader>ga :call ProducaCommand('xargs -I {} ag --nocolor --nogroup --search-files "{}" .', ":EditJump")<cr>
