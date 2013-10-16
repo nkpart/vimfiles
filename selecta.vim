@@ -45,3 +45,13 @@ function! ProducaCommand(choice_command, vim_command)
   endtry
   redraw!
 endfunction
+
+function! ProducaFunction(choice_command, vim_function)
+  try
+    let choice = system("produca " . a:choice_command)
+    let Fn = function(a:vim_function)
+    call Fn(choice)
+  catch /Vim:Interrupt/
+  endtry
+  redraw!
+endfunction

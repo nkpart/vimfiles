@@ -80,7 +80,6 @@ Bundle "gmarik/vundle"
 Bundle "terryma/vim-multiple-cursors"
 Bundle "scrooloose/syntastic"
 let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['scala'] }
-Bundle "nkpart/command-t"
 Bundle "rking/ag.vim"
 Bundle "repeat.vim"
 Bundle "surround.vim"
@@ -199,29 +198,23 @@ nnoremap <cr> :noh<cr>
 vnoremap S y:exec "silent !git log -p -S\"" . @" . "\""<cr>:redraw!<cr>
 nnoremap <Space> :wa<cr>
 
-" Command Ts
+" Selectas
+runtime selecta.vim
 runtime finders.vim
 
 nnoremap <leader>gS :call ShowSchemaFinder()<cr>
 nnoremap <leader>gM :call CommandTListChanges()<cr>
-
-runtime selecta.vim
-
 nnoremap <leader>gg :call GemfileSelecta()<cr>
 nnoremap <leader>gf :call SelectaCommand("ag -g .", ":e")<cr>
 nnoremap <leader>gh :call ProducaCommand('xargs -I {} hoogle -n 10 "{}"', ":echom")<cr>
-nnoremap <leader>ga :call ProducaCommand('xargs -I {} ag --nocolor --nogroup --search-files "{}" .', ":EditJump")<cr>
-
+nnoremap <leader>ga :call ProducaFunction('xargs -I {} ag --nocolor --nogroup --search-files "{}" .', "EditJump")<cr>
 nnoremap <leader>gm :call SelectaCommand("git status -s --porcelain", ":e")<cr>
 nnoremap <leader>ge :call SelectaCommand2(getqflist(), ":e")<cr>
 
-function! EditJump(...)
-  let jumpLine = join(a:000, " ")
-  let [fname, lineno, text] = matchlist(jumpLine,'\v(.{-}):(\d+):(.*)$')[1:3]
+function! EditJump(jumpLine)
+  let [fname, lineno, text] = matchlist(a:jumpLine,'\v(.{-}):(\d+):(.*)$')[1:3]
   exec ":e +" . lineno . " " . fname
 endfunction
-
-command! -nargs=* EditJump :call EditJump(<f-args>)
 
 nnoremap <leader>/ :GhcModTypeClear<cr>
 nnoremap <leader>. :GhcModType<cr>
