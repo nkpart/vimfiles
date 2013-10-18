@@ -10,7 +10,6 @@ set tags+=gems.tags,cabal.tags
 " set iskeyword=a-z,A-Z,_,.,39 " For hothasktags, tags can be qualified
 
 set synmaxcol=400 " Prevents vim getting really sluggish if there are long lines of data
-
 set statusline=%<%f\ (%{&ft})
 
 set history=1000
@@ -109,19 +108,12 @@ endfunction
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 
 Bundle "Shougo/neocomplcache"
-Bundle "vim-scripts/Rename"
-Bundle "tpope/vim-dispatch"
-Bundle "tpope/vim-fugitive"
-Bundle "tpope/vim-abolish"
 
 " Languages
-Bundle "vim-ruby/vim-ruby" 
 Bundle "derekwyatt/vim-scala"
-Bundle "gre/play2vim"
 Bundle "othree/html5.vim"
 Bundle "kongo2002/fsharp-vim"
-
-  " Toggles ruby blocks
+Bundle "vim-ruby/vim-ruby" 
 Bundle "jgdavey/vim-blockle"
 Bundle "tpope/vim-rails"
 
@@ -136,7 +128,6 @@ Bundle "pbrisbin/html-template-syntax"
 Bundle "ujihisa/neco-ghc"
 " 
 " " Visual / UI / Colors
-Bundle "ColorV"
 Bundle "chriskempson/base16-vim"
 Bundle "bling/vim-airline"
 
@@ -151,7 +142,6 @@ filetype plugin indent on
 " VISUAL SETTINGS
 set fillchars=vert:\ 
 set background=dark
-" set background=dark
 "
 if has('gui_running')
   colorscheme base16-monokai
@@ -170,8 +160,6 @@ au BufRead,BufNewFile {Gemfile,Rakefile,Capfile,*.rake,config.ru} set ft=ruby
 au BufRead,BufNewFile {*.md,*.markdown} set ft=markdown
 au BufRead,BufNewFile {COMMIT_EDITMSG} set ft=gitcommit
 au BufRead,BufNewFile {gitconfig,.gitconfig} set ft=gitconfig
-au BufRead,BufNewFile *.hs set path+=templates,src | set suffixesadd+=.hamlet | setlocal omnifunc=necoghc#omnifunc
-au BufRead,BufNewFile {*.h,*.m} setlocal tabstop=4 | setlocal shiftwidth=4 | setlocal softtabstop=4 | setlocal noexpandtab
 
 au BufNewFile *.hs call InsertHsModule()
 function! InsertHsModule()
@@ -221,8 +209,6 @@ nnoremap <leader>. :GhcModType<cr>
 nnoremap <leader>T :GhcModTypeInsert<cr>
 nnoremap <leader>c :wa<cr>:GhcModCheckAsync<cr>
 
-nnoremap <leader>e :cfile ./target/streams/compile/compile/\$global/out<cr>
-
 nnoremap <leader>ms :call MapSpecFile()<cr>
 func! MapSpecFile()
   exe 'map <leader>t :wa\|!any_test ' . expand("%") . '<cr>'
@@ -232,17 +218,3 @@ map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans
   \ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
   \ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
 
-au BufRead,BufNewFile *.fs set errorformat=
-	\%*[^\"]\"%f\"%*\\D%l:\ %m,
-	\\"%f\"%*\\D%l:\ %m,
-	\%f(%l\\,%c):\ %trror\ CS%\\d%\\+:\ %m,
-	\%f(%l\\,%c):\ %tarning\ CS%\\d%\\+:\ %m,
-	\%f(%l\\,%c):\ %trror\ FS%\\d%\\+:\ %m,
-	\%f(%l\\,%c):\ %tarning\ FS%\\d%\\+:\ %m,
-	\%f:%l:\ %m,
-	\\"%f\"\\,\ line\ %l%*\\D%c%*[^\ ]\ %m,
-	\%D%*\\a[%*\\d]:\ Entering\ directory\ `%f',
-	\%X%*\\a[%*\\d]:\ Leaving\ directory\ `%f',
-	\%DMaking\ %*\\a\ in\ %f,
-	\%-G%.%#Compilation%.%#,
-	\%-G%.%#
