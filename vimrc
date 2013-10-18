@@ -15,6 +15,7 @@ set clipboard+=unnamed " yank goes to clipboard
 set number
 set hidden " prevents losing undo history after save
 set nofoldenable
+set noswapfile
 
 " Search
 set ignorecase 
