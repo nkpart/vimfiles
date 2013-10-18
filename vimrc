@@ -6,18 +6,12 @@ set wildignore+=cabal-src/*,.hsenv/*
 set wildignore+=target/*,project/target/*,*/target/scala-*,*/target/*$global*
 set wildignore+=*/.git/*
 
-set tags+=gems.tags,cabal.tags
-" set iskeyword=a-z,A-Z,_,.,39 " For hothasktags, tags can be qualified
-
 set synmaxcol=400 " Prevents vim getting really sluggish if there are long lines of data
-set statusline=%<%f\ (%{&ft})
 
 set mouse=a
 set nocompatible
 set autowriteall
 set clipboard+=unnamed " yank goes to clipboard
-set noswapfile
-set nowritebackup
 set number
 set hidden " prevents losing undo history after save
 set nofoldenable
@@ -113,7 +107,6 @@ Bundle "ujihisa/neco-ghc"
 " 
 " " Visual / UI / Colors
 Bundle "chriskempson/base16-vim"
-" Bundle "bling/vim-airline"
 
 " Text objects
 Bundle "kana/vim-textobj-user"
