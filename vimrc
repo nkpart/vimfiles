@@ -12,11 +12,9 @@ set tags+=gems.tags,cabal.tags
 set synmaxcol=400 " Prevents vim getting really sluggish if there are long lines of data
 set statusline=%<%f\ (%{&ft})
 
-set history=1000
 set mouse=a
 set nocompatible
 set autowriteall
-set autoread
 set clipboard+=unnamed " yank goes to clipboard
 set noswapfile
 set nowritebackup
@@ -28,9 +26,7 @@ set nofoldenable
 set ignorecase 
 set smartcase
 set gdefault
-set incsearch
 set hlsearch
-set showmatch
 
 set formatoptions+=o " auto insert current comment leader
 set formatoptions-=r " but not after <enter> 
@@ -38,15 +34,6 @@ set formatoptions-=t " no autowrap
 
 set nowrap
 set wildmode=list:longest
-set backspace=indent,eol,start
-
-" space/tab settings
-set tabstop=2
-set shiftwidth=2
-set softtabstop=2
-set expandtab
-set smarttab
-set autoindent
 
 " Change cursor in iTerm on insert
 let &t_SI = "\<Esc>]50;CursorShape=1\x7"
@@ -54,17 +41,12 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 
 syntax on
 
-" More sane vim settings from 'Coming home to vim'
-set wildmenu
 set visualbell
 set ttyfast
-set laststatus=2
 
 set completeopt=longest,menuone
 
 let mapleader = ","
-
-runtime macros/matchit.vim
 
 " Vundle start
 filetype off
@@ -74,6 +56,8 @@ call vundle#rc()
 Bundle "gmarik/vundle"
 
 " The Bundles
+Bundle "tpope/vim-sensible"
+Bundle "tpope/vim-sleuth"
 
 " CORE
 Bundle "terryma/vim-multiple-cursors"
@@ -81,7 +65,7 @@ Bundle "scrooloose/syntastic"
 let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['scala'] }
 Bundle "rking/ag.vim"
 Bundle "repeat.vim"
-Bundle "surround.vim"
+Bundle "tpope/vim-surround"
 Bundle "tComment"
 
 let g:acp_enableAtStartup = 0
@@ -129,7 +113,7 @@ Bundle "ujihisa/neco-ghc"
 " 
 " " Visual / UI / Colors
 Bundle "chriskempson/base16-vim"
-Bundle "bling/vim-airline"
+" Bundle "bling/vim-airline"
 
 " Text objects
 Bundle "kana/vim-textobj-user"
@@ -142,20 +126,13 @@ filetype plugin indent on
 " VISUAL SETTINGS
 set fillchars=vert:\ 
 set background=dark
-"
-if has('gui_running')
-  colorscheme base16-monokai
-  set guioptions=-ace
-  set guifont=Source\ Code\ Pro\ Light:h13
-  set linespace=2
-else
-  colorscheme base16-default
-endif
+colorscheme base16-default
 hi Keyword cterm=bold
 
 highlight clear SignColumn
-" AUTOBOTS ASSEMBLE
+
 au BufLeave,FocusLost * silent! wall " Write all files whenever
+
 au BufRead,BufNewFile {Gemfile,Rakefile,Capfile,*.rake,config.ru} set ft=ruby
 au BufRead,BufNewFile {*.md,*.markdown} set ft=markdown
 au BufRead,BufNewFile {COMMIT_EDITMSG} set ft=gitcommit
@@ -180,10 +157,9 @@ inoremap jk <esc>
 nnoremap <leader><leader> <C-^>
 nnoremap <leader>aa :Ag<space>
 nnoremap <leader>s <C-w>v<C-w>w:A<cr> " Split with alternate
-nnoremap <C-j> :cn<cr>
+nnoremap <C-n> :cn<cr>
 nnoremap <C-k> :cp<cr> 
 nnoremap <cr> :noh<cr>
-vnoremap S y:exec "silent !git log -p -S\"" . @" . "\""<cr>:redraw!<cr>
 nnoremap <Space> :wa<cr>
 
 " Selectas
@@ -204,17 +180,7 @@ function! EditJump(jumpLine)
   exec ":e +" . lineno . " " . fname
 endfunction
 
-nnoremap <leader>/ :GhcModTypeClear<cr>
-nnoremap <leader>. :GhcModType<cr>
-nnoremap <leader>T :GhcModTypeInsert<cr>
-nnoremap <leader>c :wa<cr>:GhcModCheckAsync<cr>
-
 nnoremap <leader>ms :call MapSpecFile()<cr>
 func! MapSpecFile()
   exe 'map <leader>t :wa\|!any_test ' . expand("%") . '<cr>'
 endfunc
-
-map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
-  \ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
-  \ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
-
