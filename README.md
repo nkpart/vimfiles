@@ -9,7 +9,7 @@ Using it
     $ git clone https://github.com/nkpart/vimfiles.git .vim
     $ cd .vim 
     $ mkdir bundle
-    $ git checkout https://github.com/gmarik/vundle.git bundle/vundle
+    $ git clone https://github.com/gmarik/vundle.git bundle/vundle
 
 Contents
 --------

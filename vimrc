@@ -14,6 +14,14 @@ set smartcase
 set gdefault
 set hlsearch
 
+" space/tab settings
+set tabstop=2
+set shiftwidth=2
+set softtabstop=2
+set expandtab
+set smarttab
+set autoindent
+
 set formatoptions+=o " auto insert current comment leader
 set formatoptions-=r " but not after <enter> 
 set formatoptions-=t " no autowrap
@@ -44,7 +52,6 @@ Bundle "gmarik/vundle"
 " The Bundles
 
 Bundle "tpope/vim-sensible"
-Bundle "tpope/vim-sleuth"
 Bundle "tpope/vim-repeat"
 Bundle "tpope/vim-surround"
 
