@@ -1,13 +1,4 @@
-" Used by command-t to filter its list. TODO make ack use the same?
-set wildignore+=*.jar,*.o,*.hi,*.obj,*.class,dist/**,build/**,*.png,*~,static/tmp/*,tmp/*,**/*.build/**,cabal-dev/*,*.gz,*.p12,*.zip,_darcs/*
-set wildignore+=*/coverage/*,*/.bundle/*
-set wildignore+=vendor/cache/*
-set wildignore+=cabal-src/*,.hsenv/*
-set wildignore+=target/*,project/target/*,*/target/scala-*,*/target/*$global*
-set wildignore+=*/.git/*
-
 set synmaxcol=400 " Prevents vim getting really sluggish if there are long lines of data
-
 set mouse=a
 set nocompatible
 set autowriteall
@@ -51,16 +42,17 @@ call vundle#rc()
 Bundle "gmarik/vundle"
 
 " The Bundles
+
 Bundle "tpope/vim-sensible"
 Bundle "tpope/vim-sleuth"
+Bundle "tpope/vim-repeat"
+Bundle "tpope/vim-surround"
 
 " CORE
 Bundle "terryma/vim-multiple-cursors"
 Bundle "scrooloose/syntastic"
 let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['scala'] }
 Bundle "rking/ag.vim"
-Bundle "repeat.vim"
-Bundle "tpope/vim-surround"
 Bundle "tComment"
 
 let g:acp_enableAtStartup = 0
@@ -151,7 +143,7 @@ inoremap jk <esc>
 nnoremap <leader><leader> <C-^>
 nnoremap <leader>aa :Ag<space>
 nnoremap <leader>s <C-w>v<C-w>w:A<cr> " Split with alternate
-nnoremap <C-n> :cn<cr>
+nnoremap <C-j> :cn<cr>
 nnoremap <C-k> :cp<cr> 
 nnoremap <cr> :noh<cr>
 nnoremap <Space> :wa<cr>
