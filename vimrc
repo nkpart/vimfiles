@@ -43,8 +43,8 @@ Bundle "gmarik/vundle"
 
 " The Bundles
 
-Bundle "tpope/vim-sensible" " base settings
-Bundle "tpope/vim-sleuth" " discover tab settings automagically
+Bundle "tpope/vim-sensible"
+Bundle "tpope/vim-sleuth"
 Bundle "tpope/vim-repeat"
 Bundle "tpope/vim-surround"
 
