@@ -59,6 +59,9 @@ Bundle "tpope/vim-surround"
 Bundle "terryma/vim-multiple-cursors"
 Bundle "scrooloose/syntastic"
 let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['scala'] }
+let g:syntastic_error_symbol='✗'
+let g:syntastic_warning_symbol='⚠'
+
 Bundle "rking/ag.vim"
 Bundle "tComment"
 
@@ -94,6 +97,7 @@ Bundle "kongo2002/fsharp-vim"
 Bundle "vim-ruby/vim-ruby" 
 Bundle "jgdavey/vim-blockle"
 Bundle "tpope/vim-rails"
+Bundle "jhenahan/idris-vim"
 
 Bundle "Markdown"
 
@@ -162,14 +166,15 @@ runtime finders.vim
 nnoremap <leader>gS :call ShowSchemaFinder()<cr>
 nnoremap <leader>gM :call CommandTListChanges()<cr>
 nnoremap <leader>gg :call GemfileSelecta()<cr>
-nnoremap <leader>gf :call SelectaCommand("ag -g .", ":e")<cr>
+nnoremap <leader>gf :call SelectaCommand("files", ":e")<cr>
 nnoremap <leader>gh :call ProducaCommand('xargs -I {} hoogle -n 10 "{}"', ":echom")<cr>
-nnoremap <leader>ga :call ProducaFunction('xargs -I {} ag --nocolor --nogroup --search-files "{}" .', "EditJump")<cr>
+nnoremap <leader>ga :call ProducaFunction('xargs -I {} ag -S --nocolor --nogroup --search-files "{}" .', "EditJump")<cr>
+nnoremap <leader>gd :call ProducaFunction('xargs -I {} ag -S --nocolor --nogroup --search-files "{}.*::" .', "EditJump")<cr>
 nnoremap <leader>gm :call SelectaCommand("git status -s --porcelain", ":e")<cr>
 nnoremap <leader>ge :call SelectaCommand2(getqflist(), ":e")<cr>
 
 function! EditJump(jumpLine)
-  let [fname, lineno, text] = matchlist(a:jumpLine,'\v(.{-}):(\d+):(.*)$')[1:3]
+  let [fname, lineno] = matchlist(a:jumpLine,'\v(.{-}):(\d+):.*$')[1:2]
   exec ":e +" . lineno . " " . fname
 endfunction
 
@@ -177,3 +182,4 @@ nnoremap <leader>ms :call MapSpecFile()<cr>
 func! MapSpecFile()
   exe 'map <leader>t :wa\|!any_test ' . expand("%") . '<cr>'
 endfunc
+
