@@ -1,6 +1,13 @@
+
+function! EscapeSpace(string)
+  return substitute(a:string, " ", "\\\\ ", "g")
+endfunction
+
 function! SelectaCommand(choice_command, vim_command)
   try
-    silent! exec a:vim_command . " " . system(a:choice_command . " | selecta")
+    silent! exec a:vim_command . " " . EscapeSpace(system(a:choice_command . " | selecta"))
+    " echom x
+    " silent! exec a:vim_command . " " . subsitute(system(a:choice_command . " | selecta"), " ", "\ ", "g")
   catch /Vim:Interrupt/
   endtry
   redraw!
