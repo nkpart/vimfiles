@@ -64,6 +64,7 @@ let g:syntastic_warning_symbol='⚠'
 
 Bundle "rking/ag.vim"
 Bundle "tComment"
+Bundle "QuickFixCurrentNumber"
 
 let g:acp_enableAtStartup = 0
 let g:neocomplete#enable_at_startup = 1
