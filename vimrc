@@ -22,9 +22,9 @@ set expandtab
 set smarttab
 set autoindent
 
-set formatoptions+=o " auto insert current comment leader
-set formatoptions-=r " but not after <enter> 
-set formatoptions-=t " no autowrap
+" set formatoptions+=o " auto insert current comment leader
+" set formatoptions-=r " but not after <enter> 
+" set formatoptions-=t " no autowrap
 
 set nowrap
 set wildmode=list:longest
@@ -36,7 +36,6 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 syntax on
 
 set visualbell
-set ttyfast
 
 set completeopt=longest,menuone
 
@@ -61,6 +60,7 @@ Bundle "scrooloose/syntastic"
 let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['scala'] }
 let g:syntastic_error_symbol='✗'
 let g:syntastic_warning_symbol='⚠'
+let g:syntastic_haskell_checkers = ['ghc_mod']
 
 Bundle "rking/ag.vim"
 Bundle "tComment"
@@ -82,9 +82,7 @@ inoremap <expr><C-l>     neocomplete#complete_common_string()
 " <CR>: close popup and save indent.
 inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
 function! s:my_cr_function()
-  return neocomplete#smart_close_popup() . "\<CR>"
-  " For no inserting <CR> key.
-  "return pumvisible() ? neocomplete#close_popup() : "\<CR>"
+  return pumvisible() ? neocomplete#close_popup() : "\<CR>"
 endfunction
 " <TAB>: completion.
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
@@ -103,7 +101,6 @@ Bundle "jhenahan/idris-vim"
 Bundle "Markdown"
 
 Bundle "dag/vim2hs"
-" 
 Bundle "Shougo/vimproc" 
 Bundle "eagletmt/ghcmod-vim"
 let g:haskell_conceal_enumerations = 0
@@ -122,7 +119,6 @@ Bundle "michaeljsmith/vim-indent-object"
 filetype plugin indent on
 
 " VISUAL SETTINGS
-set fillchars=vert:\ 
 set background=dark
 colorscheme base16-default
 hi Keyword cterm=bold
@@ -130,11 +126,8 @@ hi Keyword cterm=bold
 highlight clear SignColumn
 
 au BufLeave,FocusLost * silent! wall " Write all files whenever
-
-au BufRead,BufNewFile {Gemfile,Rakefile,Capfile,*.rake,config.ru} set ft=ruby
-au BufRead,BufNewFile {*.md,*.markdown} set ft=markdown
 au BufRead,BufNewFile {COMMIT_EDITMSG} set ft=gitcommit
-au BufRead,BufNewFile {gitconfig,.gitconfig} set ft=gitconfig
+au BufRead,BufNewFile {gitconfig} set ft=gitconfig
 
 au BufNewFile *.hs call InsertHsModule()
 function! InsertHsModule()
@@ -156,9 +149,9 @@ nnoremap <leader><leader> <C-^>
 nnoremap <leader>aa :Ag<space>
 nnoremap <leader>s <C-w>v<C-w>w:A<cr> " Split with alternate
 nnoremap <C-j> :cn<cr>
-nnoremap <C-k> :cp<cr> 
+nnoremap <C-k> :cp<cr>
 nnoremap <cr> :noh<cr>
-nnoremap <Space> :wa<cr>
+nnoremap <Space> :wa \| SyntasticCheck<cr>
 
 " Selectas
 runtime selecta.vim
@@ -169,8 +162,8 @@ nnoremap <leader>gM :call CommandTListChanges()<cr>
 nnoremap <leader>gg :call GemfileSelecta()<cr>
 nnoremap <leader>gf :call SelectaCommand("files", ":e")<cr>
 nnoremap <leader>gh :call ProducaCommand('xargs -I {} hoogle -n 10 "{}"', ":echom")<cr>
-nnoremap <leader>ga :call ProducaFunction('xargs -I {} ag -S --nocolor --nogroup --search-files "{}" .', "EditJump")<cr>
-nnoremap <leader>gd :call ProducaFunction('xargs -I {} ag -S --nocolor --nogroup --search-files "{}.*::" .', "EditJump")<cr>
+nnoremap <leader>ga :call ProducaFunction('xargs -I {} ag -S --nocolor --nogroup --search-files "{}" . 2>/dev/null', "EditJump")<cr>
+nnoremap <leader>gd :call ProducaFunction('xargs -I {} ag -S --nocolor --nogroup --search-files "{}.*::" . 2>/dev/null', "EditJump")<cr>
 nnoremap <leader>gm :call SelectaCommand("git status -s --porcelain", ":e")<cr>
 nnoremap <leader>ge :call SelectaCommand2(getqflist(), ":e")<cr>
 
@@ -179,8 +172,15 @@ function! EditJump(jumpLine)
   exec ":e +" . lineno . " " . fname
 endfunction
 
+function! EditGitStatus(statusLine)
+endfunction
+
 nnoremap <leader>ms :call MapSpecFile()<cr>
 func! MapSpecFile()
   exe 'map <leader>t :wa\|!any_test ' . expand("%") . '<cr>'
 endfunc
 
+" Run selection as vimscript
+vnoremap <f2> :<c-u>exe join(getline("'<","'>"),'<bar>')<cr>
+
+nnoremap <leader>al ggO{-#<space>LANGUAGE<space><space>#-}<left><left><left><left><C-x><C-o>
