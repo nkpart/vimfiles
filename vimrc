@@ -52,6 +52,8 @@ Bundle "gmarik/vundle"
 "
 Bundle "justinmk/vim-sneak"
 
+Bundle "justinmk/vim-sneak"
+Bundle "QuickFixCurrentNumber"
 Bundle "tpope/vim-sensible"
 Bundle "tpope/vim-repeat"
 Bundle "tpope/vim-surround"
