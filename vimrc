@@ -49,6 +49,8 @@ call vundle#rc()
 Bundle "gmarik/vundle"
 
 " The Bundles
+"
+Bundle "justinmk/vim-sneak"
 
 Bundle "tpope/vim-sensible"
 Bundle "tpope/vim-repeat"
@@ -64,10 +66,11 @@ let g:syntastic_haskell_checkers = ['ghc_mod']
 
 Bundle "rking/ag.vim"
 Bundle "tComment"
+Bundle "Rename"
 Bundle "QuickFixCurrentNumber"
 
 let g:acp_enableAtStartup = 0
-let g:neocomplete#enable_at_startup = 1
+let g:neocomplete#enable_at_startup = 0
 let g:neocomplete#enable_smart_case = 1
 let g:neocomplete#min_syntax_length = 0
 let g:neocomplete#lock_buffer_name_pattern = "" "'\*ku\*'
@@ -120,7 +123,7 @@ Bundle "michaeljsmith/vim-indent-object"
 filetype plugin indent on
 
 " VISUAL SETTINGS
-set background=dark
+set background=light
 colorscheme base16-default
 hi Keyword cterm=bold
 
@@ -137,6 +140,15 @@ function! InsertHsModule()
   let decl = "module " . substitute(join(parts, '.'), ".hs", "", "") . " where"
   execute "normal i" . decl
 endfunction
+
+function! RenameModule()
+  let newName = input("New module name: ")
+  let srcDir = "src"
+  let path = srcDir . "/" . substitute(newName, "\\.", "/", "g") . ".hs"
+  call Rename(path, '')
+endfunction
+
+nnoremap <F6> :call RenameModule()<cr>
 
 " Autocreate directories for a new file
 augroup BWCCreateDir
