@@ -50,7 +50,11 @@ Bundle "gmarik/vundle"
 
 " The Bundles
 "
-Bundle "justinmk/vim-sneak"
+
+
+
+Bundle "bitc/lushtags"
+Bundle "majutsushi/tagbar"
 
 Bundle "justinmk/vim-sneak"
 Bundle "QuickFixCurrentNumber"
@@ -125,7 +129,7 @@ Bundle "michaeljsmith/vim-indent-object"
 filetype plugin indent on
 
 " VISUAL SETTINGS
-set background=light
+set background=dark
 colorscheme base16-default
 hi Keyword cterm=bold
 
@@ -178,7 +182,7 @@ nnoremap <leader>gg :call GemfileSelecta()<cr>
 nnoremap <leader>gf :call SelectaCommand("files", ":e")<cr>
 nnoremap <leader>gh :call ProducaCommand('xargs -I {} hoogle -n 10 "{}"', ":echom")<cr>
 nnoremap <leader>ga :call ProducaFunction('xargs -I {} ag -S --nocolor --nogroup --search-files "{}" . 2>/dev/null', "EditJump")<cr>
-nnoremap <leader>gd :call ProducaFunction('xargs -I {} ag -S --nocolor --nogroup --search-files "{}.*::" . 2>/dev/null', "EditJump")<cr>
+nnoremap <leader>gd :call ProducaFunction('xargs -I {} ag -S --nocolor --nogroup --search-files "\({}.*::\\|\(newtype\\|data\).*{}\)" . ', "EditJump")<cr>
 nnoremap <leader>gm :call SelectaCommand("git status -s --porcelain", ":e")<cr>
 nnoremap <leader>ge :call SelectaCommand2(getqflist(), ":e")<cr>
 
