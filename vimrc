@@ -73,7 +73,6 @@ let g:syntastic_haskell_checkers = ['ghc_mod']
 Bundle "rking/ag.vim"
 Bundle "tComment"
 Bundle "Rename"
-Bundle "QuickFixCurrentNumber"
 
 let g:acp_enableAtStartup = 0
 let g:neocomplete#enable_at_startup = 0
